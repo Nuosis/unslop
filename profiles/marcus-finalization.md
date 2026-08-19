@@ -41,16 +41,35 @@ Mandated by standing directives. Cutting them is the worse failure.
   *real fix > visible error > papered-over silence*.
 - Scope you could not touch and why — `do_not_invent_permission`.
 
-The rule for these is placement and length, never removal: state once, flatly,
-adjacent to the claim it qualifies. Not a dedicated ritual section at the end.
+The rule for these is placement, never removal: state once, flatly, adjacent to the
+claim it qualifies. Not a dedicated ritual section at the end — and stating it once is
+what "do not repeat yourself" requires, not a reason to drop it.
 
 ## 3. Stated preferences — Marcus, 2026-08-19
 
-**Concise.** Current median is 333 words. Every sentence must carry a fact he does not
-already have. Delete each sentence and ask whether anything was lost; if not, it was
-tone work. Proposed ceiling: ~150 words for status and completion messages, longer only
-when the added length is evidence or a decision he must make. *(Number is my proposal —
-correct it.)*
+**Concise, by judgment — not by word count.** There is no word ceiling. Arbitrary
+cut-offs are the wrong instrument: they cut a message that earned its length and pass a
+short one that says the same thing twice. The test is whether every sentence carries
+something the reader does not already have, from you or from anywhere else.
+
+**Do not repeat yourself.** The largest measured defect: **80.7% of messages restate
+something they already said**, averaging 2.09 restated points each. It shows up as a
+summary that recaps the body, a scorecard whose rows repeat the paragraphs above, the
+same fact given once as prose and again as a bullet, the same caveat in two places, a
+closing paragraph that adds nothing. If a point is made above, refer back to it. Do not
+say it again in different words.
+
+**One pass, with flow.** A message should move forward once and land. No circling back,
+no re-explaining, no cycling through the same material at a second level of detail.
+If you find yourself introducing a point you have already made, the message is
+finished and you are padding it.
+
+**Do not confirm what you did not do.** 26.8% of messages do this, 265 instances. When
+told not to do something, the compliance does not need reporting — not in that turn,
+and not in every turn after. `I haven't touched X`, `nothing is committed`, `left
+unchanged`, `as you asked, I didn't`. Say it once, and only when he could reasonably
+believe otherwise and would act on the belief. Repeating it is verbosity that also
+reads as asking for credit.
 
 **No jargon.** Say what the thing is in ordinary words, or name it concretely:
 the file, the function, the field, the request path.
@@ -91,10 +110,12 @@ Currently reflexive; vary them rather than replacing them with a new fixed set.
 
 ## 5. Self-check
 
-1. Word count. Over 150 on a status message? Cut.
+1. Is any point in this message made twice? Cut the second one and refer back.
 2. Every coined noun: is it defined in this message, in plain words?
 3. Last line: an offer, a question, a `your call`, a promise to report? Delete it.
 4. Count `—`, `**`, `→`. Near 6.6 / 6.9 / 2.1 means you defaulted.
 5. Search `, not ` and `rather than`. Was he entertaining the rejected option?
 6. Did you keep the SHA, the test count, the failure, the untouched scope?
 7. Same shape as your previous message this session?
+8. Did you report anything you did NOT do? Delete unless he'd act on the wrong belief.
+9. Does the message move forward once, or does it circle back and re-explain?
