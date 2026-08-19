@@ -25,6 +25,8 @@ JARGON = re.compile(r"\b(readback|read-back|the seam|the spine|the shape|the del
                     r"substrate|primitive|surface area|load-bearing)\b", re.I)
 DEFN = re.compile(r"(\(|—\s|:\s|,\s)(i\.e\.|that is|meaning|which is)|\bmeans\b", re.I)
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from crossturn import compare as crossturn_compare
 sys.path.insert(0, os.path.expanduser("~/.claude/hooks"))
 try:
     from askclass import classify_close, VIOLATIONS   # shared closing classifier
@@ -34,7 +36,18 @@ except Exception:
 GATED = {"menu", "handback", "surrender", "continue", "none"}
 
 
-def final_message(path):
+def final_messages(path, n=2):
+    """The last n finalization messages, newest first — cross-turn defects need the
+    previous one, which a per-message audit cannot see."""
+    out = []
+    for t in _all_finals(path)[::-1]:
+        out.append(t)
+        if len(out) >= n:
+            break
+    return out
+
+
+def _all_finals(path):
     turns = []
     with open(path, errors="replace") as fh:
         for line in fh:
@@ -59,11 +72,13 @@ def final_message(path):
                           if isinstance(b, dict)
                           and b.get("type") in ("output_text", "text", "input_text")).strip()
             turns.append((p["role"], txt, False))
-    for i in range(len(turns) - 1, -1, -1):
-        role, txt, tool = turns[i]
-        if role == "assistant" and not tool and len(txt) >= 80:
-            return txt
-    return None
+    return [txt for role, txt, tool in turns
+            if role == "assistant" and not tool and len(txt) >= 80]
+
+
+def final_message(path):
+    f = _all_finals(path)
+    return f[-1] if f else None
 
 
 def score(t):
@@ -116,7 +131,9 @@ def main():
         path = hits[-1] if hits else None
     if path and os.path.exists(path):
         try:
-            t = final_message(path)
+            msgs = final_messages(path, 2)
+            t = msgs[0] if msgs else None
+            prev = msgs[1] if len(msgs) > 1 else None
             if t:
                 import hashlib
                 row = {"harness": "codex",
@@ -125,6 +142,14 @@ def main():
                        "transcript": path,
                        "msg_sha": hashlib.sha1(t.encode()).hexdigest()[:12]}
                 row.update(score(t))
+                # log-only: 68% precision / 85% recall against a judge; a screen for
+                # the batch judge, never a verdict
+                ct = crossturn_compare(t, prev)
+                row["carried_from_prev_weak"] = ct["carried_units"]
+                row["neg_restated_weak"] = ct["neg_restated"]
+                row["has_prev"] = ct["has_prev"]
+                if ct["carried_units"] or ct["neg_restated"]:
+                    row["needs_judge"] = True
                 with open(LOG, "a") as fh:
                     fh.write(json.dumps(row) + "\n")
         except Exception:

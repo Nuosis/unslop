@@ -8,6 +8,7 @@ import json, re, sys, glob, os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from askclass import classify_close, VIOLATIONS
+from crossturn import compare as crossturn_compare
 
 # Categories the structural pass calls correctly at >=91% against an LLM judge on 86
 # stratified cases. "blocked" is deliberately NOT here: it scored 83%, and it is the
@@ -54,6 +55,35 @@ def blocks(rec):
     if isinstance(c, str):
         return [{"type": "text", "text": c}]
     return c if isinstance(c, list) else []
+
+
+def find_final_messages(path, n=2):
+    """The last n finalization messages, newest first. Cross-turn defects need the
+    previous one: a claim repeated from last turn is lexically identical to a claim
+    made once, so a per-message audit cannot see them at all."""
+    recs = []
+    with open(path, errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                recs.append(json.loads(line))
+            except Exception:
+                continue
+    out = []
+    for r in reversed(recs):
+        if r.get("type") != "assistant" or r.get("isSidechain"):
+            continue
+        b = blocks(r)
+        if not b or any(x.get("type") == "tool_use" for x in b):
+            continue
+        t = "\n".join(x.get("text", "") for x in b if x.get("type") == "text").strip()
+        if len(t) >= 80:
+            out.append(t)
+            if len(out) >= n:
+                break
+    return out
 
 
 def find_final_message(path):
@@ -127,7 +157,9 @@ def main():
         path = hits[0] if hits else None
     if path and os.path.exists(path):
         try:
-            t = find_final_message(path)
+            msgs = find_final_messages(path, 2)
+            t = msgs[0] if msgs else None
+            prev = msgs[1] if len(msgs) > 1 else None
             if t:
                 import hashlib
                 row = {
@@ -137,6 +169,16 @@ def main():
                     "msg_sha": hashlib.sha1(t.encode()).hexdigest()[:12],
                 }
                 row.update(score(t))
+                # Weak signals, deliberately NOT in the gate: scored 68% precision /
+                # 85% recall against a judge on 40 pairs, and no threshold reached
+                # 90% precision at usable recall. High recall makes it a good screen
+                # for which pairs the batch judge should read, not a verdict.
+                ct = crossturn_compare(t, prev)
+                row["carried_from_prev_weak"] = ct["carried_units"]
+                row["neg_restated_weak"] = ct["neg_restated"]
+                row["has_prev"] = ct["has_prev"]
+                if ct["carried_units"] or ct["neg_restated"]:
+                    row["needs_judge"] = True
                 with open(LOG, "a") as fh:
                     fh.write(json.dumps(row) + "\n")
         except Exception:

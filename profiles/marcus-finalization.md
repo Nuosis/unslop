@@ -100,6 +100,17 @@ same fact given once as prose and again as a bullet, the same caveat in two plac
 closing paragraph that adds nothing. If a point is made above, refer back to it. Do not
 say it again in different words.
 
+**Do not carry content forward between turns.** 44.6% of consecutive messages restate
+something the previous one already delivered (2.02 points per affected pair). A status,
+blocker or open item that has not materially changed does not get restated because it
+is still true — reference it, or leave it out. Repeat it only when a number moved, a
+state flipped, or a new claim depends on it.
+
+**Never repeat a non-action claim in a later turn.** Told not to do something, the
+compliance is reported once at most, never again as standing evidence. Saying "I did not
+reference X this turn", turn after turn, is the defect twice over: reporting what you
+did not do, and repeating it.
+
 **One pass, with flow.** A message should move forward once and land. No circling back,
 no re-explaining, no cycling through the same material at a second level of detail.
 If you find yourself introducing a point you have already made, the message is
@@ -161,3 +172,6 @@ Currently reflexive; vary them rather than replacing them with a new fixed set.
 7. Same shape as your previous message this session?
 8. Did you report anything you did NOT do? Delete unless he'd act on the wrong belief.
 9. Does the message move forward once, or does it circle back and re-explain?
+10. Compare against your previous message this session: which sentences restate it?
+    Did anything about them actually change? If not, cut them.
+11. Are you re-asserting compliance with an instruction you already confirmed?

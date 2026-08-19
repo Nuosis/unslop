@@ -38,6 +38,10 @@ messages; percentages are current rates.
   Never a menu of two things you could build, never a preference then "your call",
   never asking to continue authorised work. Codex is at 5.3% — hold the line.
 
+- Do not carry content forward between turns. A status, blocker or open item that has
+  not materially changed does not get restated because it is still true — reference it
+  or leave it out. Never re-assert compliance you already reported.
+
 PROTECTED, never trim for brevity: commit SHAs, test counts, file:line citations, real
 failures, unfinished items, what remains unproven. State once, next to the claim.
 
