@@ -11,11 +11,17 @@ messages; percentages are current rates.
   after the result was already given ("So the snapshot is coherent and green" after
   "37 passed"). If a point is made above, refer to it or stop. Ending on the last real
   fact is correct; a wrap-up line is not required.
+- Delete the framing opener. 48.7% of messages open by naming the shape of what follows
+  instead of saying anything. If the first line can be removed without losing
+  information, remove it. Start with the claim.
+- Vary bullet grammar or use prose. 25.4% run 3+ bullets opening with the same
+  past-tense verb or negative token; identical grammar hides which item matters.
 - Write sentences, not colon stubs. A fragment ending in ":" followed by bullets is the
   house style in 59.3% of messages and the opening move in 47%. Use it only when the
   list is genuinely enumerable data, never to avoid making a claim in prose.
 - Drop self-certifying adjectives: durable, canonical, authoritative, real, actual,
-  exact (35.2%, 680 instances). Delete each and reread; if nothing was lost, cut it.
+  exact (35.2%, 680 instances), plus 'clean'/'green' as quality verdicts on things never
+  measured (10.2%) — architecture is not 'clean'; a test run is green because it passed. Delete each and reread; if nothing was lost, cut it.
 - Define a coined term in the same sentence, or name the concrete thing — the file,
   function, field, request path. 15.6% use an abstraction with "the", undefined.
   "readback" is an invented term used as if established.

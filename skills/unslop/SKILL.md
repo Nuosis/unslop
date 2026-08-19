@@ -76,6 +76,12 @@ worst problem.
   single largest defect — and no regex finds it. A pattern for the labelled-recap
   shape catches 1.1% of it.
 
+**Run the consolidation pass more than once and union the results.** Two independent
+synthesis passes over the same 18 shards produced registries agreeing on only 50 of 62
+ids. The second pass found a pattern at 48.7% — the second-highest rate in that corpus
+— that the first missed entirely. One pass under-samples the pattern space, and you
+cannot tell from its output that it did.
+
 When you build a detector for a pattern, validate it before trusting it. Score it
 against an LLM judge on a stratified sample and report **per-category precision**,
 not one accuracy number. In the first run a closing-behaviour classifier scored 91%

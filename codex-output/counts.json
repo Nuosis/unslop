@@ -19,6 +19,25 @@
    "pct": 59.3
   },
   {
+   "id": "content-free-framing-opener",
+   "category": "openings",
+   "label": "Opener that announces the message instead of delivering it",
+   "description": "A colon stub or a 'Here's the honest status' line that names the shape of what follows and could be deleted without loss; 8 shards.",
+   "regex": "(?:^[^\\n:]{3,90}:\\s*(?:\\n|$)|\\bHere(?:'|\u2019)s\\s+(?:what|where|the|it|my|exactly|how)\\b)",
+   "scope": "first-200-chars",
+   "examples": [
+    "Created corrected logo files here:",
+    "Deployed to production:",
+    "Live proof:",
+    "Here's what's actually going on.",
+    "Here's the honest status.",
+    "Here's the headline and the issues."
+   ],
+   "docs": 438,
+   "hits": 491,
+   "pct": 48.7
+  },
+  {
    "id": "colon-stub-opener",
    "category": "openings",
    "label": "First line is a colon stub introducing a list",
@@ -111,6 +130,44 @@
    "pct": 33.2
   },
   {
+   "id": "real-exact-certifier",
+   "category": "vocabulary",
+   "label": "'the real' / 'the actual' / 'the exact' as certification",
+   "description": "Intensifiers asserting that this run, tool or account is the genuine one \u2014 implicitly conceding earlier ones were not, and almost always deletable; all 18 shards, 12-26 of 50 each.",
+   "regex": "\\b(?:the|a|an|this|that|his|her|your|their|its|one)\\s+(?:real|actual|genuine|exact)\\s+[a-z`\\[][\\w`-]*",
+   "scope": "anywhere",
+   "examples": [
+    "the real Explorer subagent",
+    "The actual break was in the sidecar",
+    "a genuine remaining blocker",
+    "the exact staging HCAdmin account",
+    "the exact request sent to MiniMax",
+    "the actual Queuer extension"
+   ],
+   "docs": 272,
+   "hits": 414,
+   "pct": 30.2
+  },
+  {
+   "id": "uniform-grammar-bullet-run",
+   "category": "formatting",
+   "label": "Bullet run with identical grammatical opening",
+   "description": "Three or more consecutive bullets all opening with the same past-tense verb or the same negative token, turning a diff or an absence into parallel-structure inventory; 8 shards.",
+   "regex": "(?m)^\\s*-\\s+(?:Added|Removed|Updated|Fixed|Replaced|Deployed|Ran|Pushed|Closed|Preserved|Restored|Rebuilt|Persisted|Created|Implemented|Changed|Wired|Moved|Merged|Documented|No\\b|Nothing\\b|Zero\\b|It does \\*{0,2}not\\b|Do \\*{0,2}not\\b|I did \\*{0,2}not\\b)",
+   "scope": "line-start",
+   "examples": [
+    "- Added a clear `rejection_reason`",
+    "- Removed `_NoopSessionEvalJudge`",
+    "- Closed 93 pre-`1.0.307` failed executable backlog rows as `closed_rejected`.",
+    "- No reply was sent.",
+    "- It does **not** set `processing_status = system_ops_pending`.",
+    "- Do **not** enable Tau memory."
+   ],
+   "docs": 229,
+   "hits": 480,
+   "pct": 25.4
+  },
+  {
    "id": "semicolon-claim-caveat-splice",
    "category": "sentence-structure",
    "label": "Semicolon welding claim to caveat",
@@ -126,6 +183,24 @@
    "docs": 224,
    "hits": 267,
    "pct": 24.9
+  },
+  {
+   "id": "absolute-path-citation",
+   "category": "formatting",
+   "label": "Absolute-path link or file:LINE anchor",
+   "description": "Evidence rendered as `[basename.py](/Users/marcusswift/.../file.py:LINE)` or a bare backticked `file.py:137` \u2014 unclickable for the reader, a citation ritual standing in for quoting the code; all 18 shards.",
+   "regex": "(?:\\]\\(<?/Users/[^)\\n]{5,200}\\)|\\.(?:py|ts|tsx|js|jsx|php|md|json|ya?ml|toml)::?\\d+(?:[-\u2013]\\d+)?\\b)",
+   "scope": "anywhere",
+   "examples": [
+    "[registry.py](/Users/marcusswift/python/clarify_voice/app/services/registry.py:33)",
+    "[config.toml](/Users/marcusswift/.codex/config.toml:210)",
+    "`service.py:72\u2013117`",
+    "`tau_runtime.py:137`",
+    "`devflow_queuer.py:798`"
+   ],
+   "docs": 215,
+   "hits": 679,
+   "pct": 23.9
   },
   {
    "id": "absolute-path-md-link",
@@ -161,6 +236,25 @@
    "docs": 200,
    "hits": 278,
    "pct": 22.2
+  },
+  {
+   "id": "colon-label-pseudo-header",
+   "category": "structure",
+   "label": "Bare 'Label:' line instead of a header",
+   "description": "A colon-terminated noun phrase alone on a line standing in for a markdown header; the change-list and evidence slots are fixed but their names rotate through 15+ near-synonyms. All 18 shards, 39-48 of 50 files.",
+   "regex": "(?m)^\\s*(?:What changed(?: in this pass| now| and shipped| back)?|What I (?:did|found|verified|observed|added|fixed)|What(?:'|\u2019)s done|What now exists|What exists(?: now| right now)?|What happened|What we know|Key changes|Key pieces now in place|Changed|Changes|Delivered|Implemented|Added|Removed|Key outcomes|Verification(?: run| passed| done| I ran| and deploy status)?|Verified(?: live| now| on [^\\n:]{0,40})?|Validation(?: passed| results| already run)?|Checks pass(?:ed)?|Smoke checks passed|Final checks|Evidence|Live proof|Current evidence|Requirements evidence|Smoke evidence|Tests(?: added| run)?|Current state|Live state|Result|Results|Status|Commit|Pushed|Artifacts|Findings|Proven)\\s*:\\s*$",
+   "scope": "line-start",
+   "examples": [
+    "What changed:",
+    "Verification:",
+    "Verified:",
+    "Validation passed:",
+    "Key changes:",
+    "Current state:"
+   ],
+   "docs": 195,
+   "hits": 273,
+   "pct": 21.7
   },
   {
    "id": "commit-sha-token",
@@ -217,6 +311,44 @@
    "docs": 152,
    "hits": 158,
    "pct": 16.9
+  },
+  {
+   "id": "verdict-fragment-opener",
+   "category": "openings",
+   "label": "Subjectless verdict fragment as sentence one",
+   "description": "The message opens with a past participle (or a chain of them) punctuated as its own sentence, so the completion claim lands before any evidence; the dominant opener in all 18 shards.",
+   "regex": "^\\s*(?:\\*\\*)?(?:Done|Fixed|Implemented|Reconciled|Completed|Confirmed|Resolved|Removed|Reverted|Handled|Deployed|Pinned|Changed|Corrected|Tested|Verified|Cleaned|Rebuilt|Narrowed|Delegated|Traced|Held|Killed|Recorded)(?:\\*\\*)?(?:\\s*[.:]|(?:\\s*,)?\\s+(?:and\\s+)?(?:deployed|pushed|committed|verified|merged|tested|proved|aligned|live-verified|redeployed|reinstalled|audited|integrated|smoke-tested|pinned))",
+   "scope": "first-200-chars",
+   "examples": [
+    "Done.",
+    "Fixed.",
+    "Implemented and deployed.",
+    "Confirmed and aligned.",
+    "Implemented, committed, pushed, and deployed.",
+    "Fixed, tested, committed, pushed, and redeployed."
+   ],
+   "docs": 151,
+   "hits": 154,
+   "pct": 16.8
+  },
+  {
+   "id": "standing-debt-qualifier",
+   "category": "sentence-structure",
+   "label": "'remains unverified' / 'still not' held-over item",
+   "description": "The standing-qualifier verb attaching an unfinished item to every report, often twice in one message; 'remain' or 'still' appears in 17-29 of 50 across shards 11-18.",
+   "regex": "(?:\\bremain(?:s|ed|ing)?\\s+(?:un(?:proven|verified|tested|implemented|changed|clear|started|resolved)|not\\b|outstanding|local(?:-only)?|pending|blocked|absent|active|clean|intact|material|untouched|limited)\\b|\\bstill\\s+(?:not|no|needs|requires|fails|remains?|unverified|uncommitted|dirty|blocked|missing|outstanding|pending|does not|isn(?:'|\u2019)t|sits|has)\\b)",
+   "scope": "anywhere",
+   "examples": [
+    "Those capabilities remain unproven.",
+    "remains local only",
+    "Goal remains active.",
+    "Still no memory, identity, goal, or task persistence added.",
+    "Worktree is still dirty with real code changes plus generated/test artifact noise",
+    "Workspace is still uncommitted."
+   ],
+   "docs": 147,
+   "hits": 157,
+   "pct": 16.3
   },
   {
    "id": "subjectless-past-verb-opener",
@@ -545,6 +677,25 @@
    "pct": 10.3
   },
   {
+   "id": "clean-green-quality-verdict",
+   "category": "vocabulary",
+   "label": "'clean' and 'green' as the quality verdict",
+   "description": "Architecture, answers, boundaries and worktrees graded 'clean'; CI and test outcomes reduced to 'green', with the coined 'false green' / 'greenwash' used undefined. 10 shards.",
+   "regex": "(?:\\b(?:clean|cleaner|cleanest)\\s+(?:architecture|boundar(?:y|ies)|decision boundary|answer|model|path|split|rule|fix|sequence|artifact|implementation|separation|repair|commit boundary)\\b|\\bmaps cleanly\\b|\\b(?:Working tree|Tree|Worktree|Repository) is clean\\b|\\b(?:green|greenwash(?:ing|ed)?|false[- ]greens?|falsely green|gate-green|release-green|green-but-broken)\\b)",
+   "scope": "anywhere",
+   "examples": [
+    "That gives us a clean architecture",
+    "The clean path is:",
+    "Working tree is clean.",
+    "All TODO contracts are now green.",
+    "I did not greenwash a broken UI into passing.",
+    "Read-only adversarial review found these open false greens:"
+   ],
+   "docs": 92,
+   "hits": 149,
+   "pct": 10.2
+  },
+  {
    "id": "text-fence-for-prose",
    "category": "formatting",
    "label": "```text fence around non-code",
@@ -648,6 +799,25 @@
    "pct": 7.0
   },
   {
+   "id": "hedged-recommendation-label",
+   "category": "tone",
+   "label": "\"I'd <verb>\" / 'My recommendation:'",
+   "description": "The advisory hedge, often announced under a possessive label; always attached to a fully-formed recommendation the message then does not act on. 10 shards, with 'My vote:' five times in one message.",
+   "regex": "(?:\\bI(?:'|\u2019)?d\\s+(?:make|keep|treat|take|separate|frame|narrow|put|refactor|design|split|choose|start|implement|replace|sharpen|model|phrase|remove|add|avoid|prefer|probably|fix|say|want|bet|lean)\\b|\\bI would\\s+(?:not\\b|start|keep|make|avoid|treat|restructure|add|bet|deliberately|use|run)\\b|\\bMy\\s+(?:recommendation|read|vote|assessment|expectation|lean|pick|preferred path|honest read|instinct)\\b|\\bI lean\\b)",
+   "scope": "anywhere",
+   "examples": [
+    "I'd frame it as **Developer Mode / Self-Update Workflow**",
+    "I'd separate these into three distinct operator tools with clear ownership:",
+    "I would not make the browser UI talk directly to DevFlow SQLite",
+    "My recommendation: reuse the existing `memory_proposed` event internally for now",
+    "My vote:",
+    "So my read is:"
+   ],
+   "docs": 63,
+   "hits": 96,
+   "pct": 7.0
+  },
+  {
    "id": "green-as-state",
    "category": "vocabulary",
    "label": "'green' / 'false green' as the unit of success",
@@ -664,6 +834,24 @@
    "docs": 62,
    "hits": 114,
    "pct": 6.9
+  },
+  {
+   "id": "does-not-prove-fence",
+   "category": "evidence",
+   "label": "'This proves X; it does not prove Y'",
+   "description": "A fixed construction that certifies a result and withdraws half of it in the same breath, bounding the claim whether or not the user asked for the bound; 9 shards.",
+   "regex": "(?:\\b(?:proves|verifies|confirms)\\b[^.\\n]{0,150}?(?:;|,|\u2014|\u2013)\\s*(?:it\\s+|but\\s+it\\s+|and\\s+)?(?:does\\s+not|do\\s+not|not)\\b|\\b(?:does|do|did)\\s+not\\s+(?:yet\\s+)?(?:prove|verify|claim|mean|establish|include|exercise)\\b)",
+   "scope": "anywhere",
+   "examples": [
+    "This proves the schema and deterministic orchestration code; it does not yet prove that the live root model invokes the tool.",
+    "This verifies receipt and visibility in Claire\u2014not that Claire has triaged or acted on them yet.",
+    "This does not prove every Charlie capability works.",
+    "It does not yet verify Courtney's own self-assignment/account behavior or production.",
+    "they do not prove the actual browser route integrates"
+   ],
+   "docs": 58,
+   "hits": 64,
+   "pct": 6.4
   },
   {
    "id": "reconciled-scope-retraction",
@@ -756,6 +944,24 @@
    ],
    "docs": 50,
    "hits": 57,
+   "pct": 5.6
+  },
+  {
+   "id": "labelled-trailing-caveat",
+   "category": "closings",
+   "label": "'Important:' / 'Note:' labelled qualifier",
+   "description": "A caveat bolted on under a rotating label rather than stated next to the claim it qualifies; 10 shards, with the label cycling through distinction/boundary/nuance/finding/note.",
+   "regex": "(?m)^\\s*(?:Important(?:\\s+(?:distinction|boundary|caveat|note|finding|nuance|precision|pattern|detail|side effect|contract|design rule|billing caveat|process issue|points to settle))?|Note|Local note|Operational note|Quality note|Caveats?|Bottom line|Overall|Summary)\\s*[:.]",
+   "scope": "anywhere",
+   "examples": [
+    "Important distinction: these are all session-scoped live tools.",
+    "Important boundary: this currently proves the pipeline mechanics, persistence, resumability, deterministic gates, and failure behavior.",
+    "Note: both repos already have broader unrelated dirty worktree changes.",
+    "Local note: there is stashed/uncommitted customer-ops work preserved locally; I did not deploy or discard it.",
+    "Quality note: the artifact is now functional and materially useful, but probably still too dense for your \u201cNB only\u201d bar."
+   ],
+   "docs": 50,
+   "hits": 51,
    "pct": 5.6
   },
   {
@@ -956,6 +1162,25 @@
    "docs": 34,
    "hits": 35,
    "pct": 3.8
+  },
+  {
+   "id": "invented-precision-selfscore",
+   "category": "tone",
+   "label": "Self-assigned score or spurious-precision count",
+   "description": "An unfalsifiable completion percentage or letter grade with no denominator, or token/byte/millisecond figures given to full precision as reassurance; 6 shards, up to 16 of 50 as the literal last line.",
+   "regex": "(?m)^\\s*Progress:\\s*\\*{0,2}\\d{1,3}\\s*%|\\bparity estimate:?\\s*\\*{0,2}~?\\d{1,3}(?:\\s*-\\s*\\d{1,3})?\\s*%|\\b(?:Efficiency|Reviewer quality|Reporting quality|Workflow architecture|Autonomous reliability):\\s*\\*\\*[A-D][+-]?\\*\\*|\\b\\d{1,3}(?:,\\d{3})+\\s+(?:tokens|bytes|ms|assertions|input tokens|output tokens)\\b|\\bWall clock:|\\bGoal (?:usage|accounting)\\b",
+   "scope": "anywhere",
+   "examples": [
+    "Progress: 100%.",
+    "Progress: 97% complete.",
+    "Current parity estimate: **~93%**.",
+    "Efficiency: **D**",
+    "Final goal usage: 1,128,791 tokens, about 40 minutes 33 seconds elapsed",
+    "Wall clock: `1:51.77`"
+   ],
+   "docs": 33,
+   "hits": 43,
+   "pct": 3.7
   },
   {
    "id": "thats-the-verdict-stamp",

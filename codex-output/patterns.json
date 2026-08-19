@@ -1,740 +1,1403 @@
 [
-  {
-    "id": "bare-verdict-fragment-opener",
-    "category": "openings",
-    "label": "One-word verdict fragment",
-    "description": "The message opens with a single past-participle or status word punctuated as its own sentence, so the verdict lands before any evidence; reported as the dominant opener in every shard.",
-    "regex": "^\\s*(?:\\*\\*)?(?:Done|Fixed|Implemented|Reconciled|Completed|Confirmed|Resolved|Removed|Reverted|Handled|Deployed|Pinned|Changed|Corrected|Tested|Verified|Cleaned|Rebuilt|Narrowed|Delegated|Traced|Held|Killed|Recorded)(?:\\*\\*)?\\s*[.:]",
-    "scope": "first-200-chars",
-    "examples": ["Done.", "Fixed.", "Implemented.", "Reconciled.", "Recorded.", "Confirmed."]
-  },
-  {
-    "id": "participle-chain-opener",
-    "category": "openings",
-    "label": "Conjoined past-participle telegraph",
-    "description": "Two to five past participles chained as the whole first sentence, compressing the entire work report into a verb list with no subject; found in 14 shards.",
-    "regex": "^\\s*(?:Implemented|Fixed|Deployed|Committed|Updated|Done|Completed|Added|Removed|Created|Built|Closed|Changed|Reverted|Corrected|Reconciled|Reviewed)(?:\\s*,)?\\s+(?:and\\s+)?(?:deployed|pushed|committed|verified|merged|tested|proved|live-verified|redeployed|reinstalled|audited|integrated|aligned|pinned|smoke-tested)\\b",
-    "scope": "first-200-chars",
-    "examples": ["Implemented and deployed.", "Fixed and deployed.", "Implemented, pushed, and deployed.", "Implemented, committed, pushed, and deployed.", "Confirmed and aligned.", "Fixed, tested, committed, pushed, and redeployed."]
-  },
-  {
-    "id": "subjectless-past-verb-opener",
-    "category": "openings",
-    "label": "Subject-elided past-tense verb opener",
-    "description": "The first word is a bare past-tense verb with the 'I' deleted, followed directly by the deliverable; the near-template 'Implemented the <adj> <noun>' recurs across all shards.",
-    "regex": "^\\s*(?:Implemented|Added|Updated|Fixed|Removed|Created|Built|Closed|Continued|Advanced|Completed|Documented|Ran|Moved|Restored|Revamped|Filled|Cleaned|Folded|Kept|Triggered|Opened|Encoded|Checked|Noted|Picked|Stopped|Unskipped|Disabled|Selected)\\s+(?:the|a|an|all|another|it|this|these|my|his|her|their|our|from|in|locally|`|[A-Z])",
-    "scope": "first-200-chars",
-    "examples": ["Implemented the memory write path.", "Removed the auto top-up row from the Funds balance card.", "Continued the compression parity work and closed another behavior gap.", "Closed another production-readiness gap.", "Documented the sub-agent plan.", "Added Headroom-style fail-open protection for Tau's direct compression path."]
-  },
-  {
-    "id": "polarity-token-opener",
-    "category": "openings",
-    "label": "Bare Yes/No verdict token",
-    "description": "A one-word polarity answer punctuated as its own sentence before the real content; every shard reports it, typically 12-20 of 50 messages.",
-    "regex": "^\\s*(?:\\*\\*)?(?:Yes|No|Not yet|Not fully|Partly|Partially true|Mostly|Correct|Exactly|Right|Absolutely|Agreed)(?:\\*\\*)?\\s*[.,:;\u2014\u2013-]",
-    "scope": "first-200-chars",
-    "examples": ["Yes.", "No.", "Yes, mostly.", "Yes\u2014with one additional integration layer.", "Partly.", "No\u2014not sufficiently.", "Agreed. It's noise."]
-  },
-  {
-    "id": "yes-then-walkback",
-    "category": "rhetoric",
-    "label": "Affirm, then immediately qualify",
-    "description": "The opening 'Yes' is reversed or fenced in the same sentence by 'but', 'with one correction', or a partial hedge, so the verdict token carries no information; 8 shards.",
-    "regex": "^\\s*(?:\\*\\*)?(?:Yes|No)\\b[^.\\n]{0,70}?[,.\u2014\u2013-]\\s*(?:but\\b|with one (?:important )?correction|with caveats|not (?:fully|entirely|all)\\b|mostly\\b|partly\\b|and no\\b|though\\b)",
-    "scope": "first-200-chars",
-    "examples": ["Yes, with one important correction: **the current Hours plans do not trigger provisioning.**", "Yes, but not as the current static default.", "No, not fully yet.", "Yes and no.", "Yes, with caveats.", "Yes, mostly."]
-  },
-  {
-    "id": "youre-right-deference-opener",
-    "category": "openings",
-    "label": "Concede the user was right first",
-    "description": "Opens by ratifying the user's correctness or conceding an error before any content of its own; present in 15 of 18 shards.",
-    "regex": "^\\s*(?:You(?:'|\u2019)?re right|You are right|You were right|You(?:'|\u2019)?re correct|You are correct|You are exactly right|Your (?:instinct|instincts|read|sequencing|distinction)\\b)",
-    "scope": "first-200-chars",
-    "examples": ["You're right. I drifted into solving the content by hand, which is the wrong move here.", "You were right. My earlier read was wrong because I checked SJI first.", "You're right to call this out. I had not run the seed after the prior deploy work.", "Your instinct is exactly right, and the audit proves it's a real gap \u2014 not a hypothetical one.", "You're right to be pissed."]
-  },
-  {
-    "id": "understood-acknowledged-opener",
-    "category": "openings",
-    "label": "Compliance token opener",
-    "description": "Opens with 'Understood' / 'Acknowledged' / 'Noted' absorbing an instruction, usually followed by parroting the user's own constraint back; heavy in shards 8-18.",
-    "regex": "^\\s*(?:Understood|Acknowledged|Noted|Agreed|Clear|Got it)\\s*[.,;:\u2014]",
-    "scope": "first-200-chars",
-    "examples": ["Understood. I'll apply that verification and reporting standard on every completion claim.", "Acknowledged. The verified claim remains limited to the deployed pre-close checkpoint.", "Understood; subsequent completion claims will distinguish design, local implementation, runtime execution, and verified behavioral evidence.", "Understood. I over-ran that.", "Got it."]
-  },
-  {
-    "id": "future-compliance-promise",
-    "category": "tone",
-    "label": "Promise to behave differently next time",
-    "description": "A content-free pledge about how future completion claims will be worded, standing in for doing work; whole messages in shards 15-18 consist of only this plus a coda.",
-    "regex": "(?:\\bI(?:'|\u2019)?ll\\s+(?:apply|keep|continue to|reconcile|limit|state)\\b[^.\\n]{0,140}\\b(?:completion claims?|evidence|verification standard|limitations?|standard)\\b|\\bFuture completion (?:claims|reports) will\\b|\\bSubsequent completion claims will\\b)",
-    "scope": "anywhere",
-    "examples": ["Understood. I'll keep completion claims tied to exact observed evidence and state limitations plainly.", "Acknowledged. Future completion reports will distinguish direct evidence from limitations and include the required turn summary.", "Understood; subsequent completion claims will distinguish design, local implementation, runtime execution, and verified behavioral evidence.", "Understood. I'll apply that evidence check before making any fixed, resolved, verified, or completed claim."]
-  },
-  {
-    "id": "reconciled-scope-retraction",
-    "category": "openings",
-    "label": "'Reconciled:' / scope-narrowing label opener",
-    "description": "An entire message genre whose first word announces that a prior claim is being narrowed, using one of a small set of interchangeable labels; 6 shards, up to 18 of 50 in one.",
-    "regex": "^\\s*(?:Reconciled|Reconciliation complete|Reconciled status|Reconciled scope|Reconciled limitation|Claim reconciled|Evidence reconciled|Evidence reconciliation|Evidence clarification|Evidence boundary|Scope reconciliation|Scope check|Scope confirmed|Scope clarification|Scope limitation|Verified scope|Precision limitation|Narrowed claim|Narrowing (?:one point|the claim)|Correction(?: for precision)?|Clarification|Observed production evidence only)\\b\\s*[:.,]",
-    "scope": "first-200-chars",
-    "examples": ["Reconciled: only the isolated local fixture was verified\u2014not the complete canonical Observation node.", "Narrowed claim: only the established-history C-X2 branch was verified.", "Scope confirmed: this was a local pre-run review of the uncommitted CLD worktree.", "Evidence boundary:", "Reconciled against the literal request:", "Precision limitation:"]
-  },
-  {
-    "id": "colon-stub-opener",
-    "category": "openings",
-    "label": "First line is a colon stub introducing a list",
-    "description": "The opening line is a label fragment ending in a colon that hands straight to bullets or a fence, so the message has no topic sentence; 7 shards.",
-    "regex": "^[^\\n:]{3,90}:\\s*(?:\\n|$)",
-    "scope": "first-200-chars",
-    "examples": ["Created corrected logo files here:", "Deployed to production:", "Live proof:", "Evidence from the repo right now:", "Straight answer:", "Sources checked:"]
-  },
-  {
-    "id": "heres-the-deictic-framing",
-    "category": "openings",
-    "label": "\"Here's the honest status\" framing sentence",
-    "description": "A second sentence that announces the shape of the message instead of being part of it; every instance is deletable without loss.",
-    "regex": "\\bHere(?:'|\u2019)s\\s+(?:what|where|the|it|my|exactly|how)\\b",
-    "scope": "first-200-chars",
-    "examples": ["Here's what's actually going on.", "Here's the honest status.", "Here's the resolution.", "Here's my actual take.", "Here's the grounded picture:", "Here's the headline and the issues."]
-  },
-  {
-    "id": "turn-summary-coda",
-    "category": "closings",
-    "label": "Mandatory 'Turn summary:' footer",
-    "description": "A trailing paragraph literally beginning 'Turn summary:' whose first sentence restates the body verbatim-in-other-words and whose second names a next step; 48-49 of 50 in shards 16-18.",
-    "regex": "(?m)^\\s*Turn summary:\\s",
-    "scope": "last-200-chars",
-    "examples": ["Turn summary: We completed the independent adversarial audit of CHI-13.", "Turn summary: The explicit CHI-16 selector is locally implemented and verified. The next best step is pushing `db79db69` to `origin/dev`.", "Turn summary: The completion-check requirements are acknowledged.", "Turn summary: We refined Erin into a process-governance system."]
-  },
-  {
-    "id": "turn-summary-royal-we",
-    "category": "tone",
-    "label": "'We' in the coda for solo work",
-    "description": "The body says 'I' and the summary flips to 'We' for the same solo agent work, diffusing credit to a collaborator who did nothing; 24-26 codas per shard in shards 15-18.",
-    "regex": "(?m)^\\s*Turn summary:\\s*We\\b",
-    "scope": "last-200-chars",
-    "examples": ["Turn summary: We confirmed from the live SMS and tool traces that Charlie failed to route.", "Turn summary: We verified that DIV implements most of Phase 1.", "Turn summary: We implemented the single-root SMSKit repair locally with focused contract coverage.", "Turn summary: We reviewed the live quantitative process and found gaps."]
-  },
-  {
-    "id": "best-next-step",
-    "category": "closings",
-    "label": "'Best next step:' prescription",
-    "description": "A fixed terminal slot naming one future action, always superlative though there is never a runner-up; the single strongest closing tic across shards 6-18, up to 39 of 50.",
-    "regex": "\\b(?:(?:the\\s+)?(?:single\\s+)?(?:next\\s+best|best\\s+next)\\s+(?:step|action|move|target|route|cleanup|check)\\b|the\\s+next\\s+step\\s+is\\b|next\\s+best\\s+step\\s+remains\\b)",
-    "scope": "anywhere",
-    "examples": ["Best next step: fix the idea-to-story actor normalization lane first, because it accounts for multiple failures.", "The next best step is to add malformed-payload non-mutation proof.", "Next best step:", "The single next best step is to leave the workspace untouched.", "Best next compression-only target:"]
-  },
-  {
-    "id": "forward-pointer-remaining-work",
-    "category": "closings",
-    "label": "'The next/remaining X is' forward pointer",
-    "description": "Closes by naming work not done, using a fixed frame of 'the next' plus a superlative plus a work noun; 8 shards.",
-    "regex": "\\bThe\\s+(?:next|remaining|immediate|correct|right|safest|sensible|missing|bigger|only remaining)\\s+(?:major\\s+|real\\s+|useful\\s+|concrete\\s+|controlled\\s+|highest-value\\s+|correct\\s+|required\\s+|remaining\\s+)?(?:work|move|fix|pass|check|action|proof|cleanup|correction|verification|milestone|repair|blocker|investigation|decision)\\b",
-    "scope": "anywhere",
-    "examples": ["The next real move is deployment/reset materialization, not more theory.", "The next highest-value fix is to suppress SMS alerts for `cancelled` runs.", "The remaining proof is to run this contract against isolated real bug artifacts.", "The next major remaining work is production deployment/reset path:", "The only remaining investigation is separate:"]
-  },
-  {
-    "id": "did-not-do-disclosure",
-    "category": "handback",
-    "label": "'I did not X' negative disclosure",
-    "description": "A standalone terminal sentence inventorying untaken actions, emitted unprompted whether or not anyone could have believed otherwise; all 18 shards.",
-    "regex": "\\bI\\s+(?:did\\s+not|didn(?:'|\u2019)t|have\\s+not|haven(?:'|\u2019)t|made\\s+no|took\\s+no|issued\\s+no|will\\s+not)\\b",
-    "scope": "anywhere",
-    "examples": ["I did not run the live BASIC suite.", "I did not stage, commit, push, or deploy.", "I made no changes.", "I have not committed or deployed these changes yet.", "I did not touch shared Engine source or CHI during this rerun.", "I issued no live bug-row mutations."]
-  },
-  {
-    "id": "nothing-was-changed-attestation",
-    "category": "handback",
-    "label": "'Nothing was deployed' compliance recital",
-    "description": "A standing attestation that no side effects occurred, appended as a ritual rather than as an answer to anything asked; 30-32 of 50 in the later shards.",
-    "regex": "(?:\\bNothing\\s+(?:was|is|has\\s+been)\\s+(?:committed|pushed|deployed|changed|touched|mutated|removed|sent|fixed|exercised|staged)\\b|\\bNo\\s+(?:code|files?|data|records?|production|live|deployment|push|side\\s+effects?|business\\s+data|application\\s+tests|customer\\s+records|tooling\\s+code|queue|new)\\b[^.\\n]{0,110}?\\b(?:was|were)\\s+(?:changed|committed|pushed|deployed|touched|modified|mutated|created|sent|introduced|performed|run|made|altered)\\b)",
-    "scope": "anywhere",
-    "examples": ["Nothing was committed, deployed, or exercised against live Host/CHI.", "No code changes were made for this one; this was live state repair.", "No production data or configuration was changed.", "No files were changed.", "Nothing was pushed or deployed.", "No tooling code was changed, deployed, or restarted."]
-  },
-  {
-    "id": "negated-noun-sweep",
-    "category": "handback",
-    "label": "Four-to-nine-noun negated enumeration",
-    "description": "A long comma list of systems that were not touched, escalating the disclaimer into an inventory; 5 shards.",
-    "regex": "\\bNo\\s+(?:[A-Za-z/_-]+,\\s+){3,}(?:or\\s+)?[A-Za-z/_-]+\\s+(?:was|were)\\s+(?:changed|touched|created|sent|deployed|mutated|modified|run|exercised|performed|regenerated)\\b",
-    "scope": "anywhere",
-    "examples": ["No code, queues, tests, evals, commits, deployments, or live data were changed during this investigation.", "No provider, model, MiniMax, Pipecat, voice architecture, deployment, live call, or SMS path was changed or exercised.", "No code, coupon records, jobs, or customer data were changed.", "No invitations, tokens, assignments, or engagement records were regenerated or changed."]
-  },
-  {
-    "id": "preserved-dirty-worktree",
-    "category": "handback",
-    "label": "Unrelated dirty work disclaimed and 'preserved'",
-    "description": "A recurring boilerplate clause partitioning pre-existing repo mess from this turn's work, with 'preserved' or 'left untouched' as the ritual verb; 8 shards.",
-    "regex": "(?:\\b(?:unrelated|pre-existing)\\b[^.\\n]{0,80}\\b(?:dirty|untracked|uncommitted|worktree)\\b|\\b(?:were|was)\\s+preserved\\b|\\bleft\\s+(?:those|them|it|that)\\s+(?:alone|untouched)\\b|\\bremain(?:s)?\\s+untouched\\b)",
-    "scope": "anywhere",
-    "examples": ["Existing unrelated dirty work is still present in `.pi/`, `app/services/google_voice/`, and `tests/`.", "The existing unrelated dirty repo files were left untouched.", "The four unrelated dirty agent `pyproject.toml` files were preserved.", "There are still unrelated pre-existing dirty files in `tau-by-clarity`; I left those alone."]
-  },
-  {
-    "id": "memory-provenance-footer",
-    "category": "handback",
-    "label": "Memory/skill-file compliance citation",
-    "description": "A near-final sentence naming the .md rule file that governed the run; it certifies process obedience and says nothing about the result; 11 shards.",
-    "regex": "\\b(?:Memory(?:/preflight| preflight| rules?| used| rule used)?|Operational(?: memory| handling| routing| details| guidance| credential| targeting| preflight| behavior| access| paths| assessment)?|Deployment(?: targeting)?|Plane used|I followed|I used|This follow(?:s|ed)|The (?:audit|rerun|deployment|process|topology|evidence-first workflow) (?:followed|used|comes from))\\b[^.\\n]{0,180}?\\.md\\b",
-    "scope": "anywhere",
-    "examples": ["Memory preflight used: `clarity-internal-secrets.md`.", "Operational handling followed `agent-autonomy-preferences.md`, `zshrc-agent-dispatcher.md`, and `tau-root-paths.md`.", "I followed `process-not-content.md` and `timeouts-are-not-runaway-guardrails.md`.", "Deployment followed [erin-kai-claire-deployment.md](...).", "Operational access followed `devflow-host-tunnel.md`."]
-  },
-  {
-    "id": "memory-preflight-null-result",
-    "category": "evidence",
-    "label": "Preflight that found nothing, reported anyway",
-    "description": "Narrates that a memory search returned no hits \u2014 process narration with zero payload; noted in 4 shards.",
-    "regex": "\\bmemory\\s+preflight\\b[^.\\n]{0,140}\\bno\\b",
-    "scope": "anywhere",
-    "examples": ["Memory preflight found no existing Claire alias rule.", "Memory preflight used `/Users/marcusswift/AGENTS.md`; no relevant CLD promise rule was found.", "Memory preflight found no CHI-specific retained procedure.", "Memory preflight was run first; no Putnam-specific email credential/process memory was found."]
-  },
-  {
-    "id": "what-changed-label",
-    "category": "structure",
-    "label": "'What changed:' section label",
-    "description": "A bare noun-phrase line ending in a colon used instead of a markdown header to open the change list; the label rotates through 15+ near-synonyms doing one job. Present in all 18 shards.",
-    "regex": "(?m)^\\s*(?:What changed(?: in this pass| now| and shipped| back)?|What I (?:did|found|verified|observed|added|fixed)|What(?:'|\u2019)s done|What now exists|What exists(?: now| right now)?|What happened|What we know|What is (?:actually proven|still weak|verified now|not verified enough)|Key changes|Key pieces now in place|Changed|Changes|Delivered|Implemented|Added|Removed|Key outcomes)\\s*:\\s*$",
-    "scope": "line-start",
-    "examples": ["What changed:", "What I did:", "Key changes:", "Changed:", "What exists now:", "What changed in this pass:"]
-  },
-  {
-    "id": "verification-label-block",
-    "category": "structure",
-    "label": "'Verification:' evidence block",
-    "description": "A near-mandatory labelled block of proof bullets that always sits after the change list and before the caveat, never integrated into prose; all 18 shards.",
-    "regex": "(?m)^\\s*(?:Verification(?: run| passed| done| I ran| and deploy status)?|Verified(?: live| now| on [^\\n:]{0,40})?|Validation(?: passed| results| already run)?|Checks pass(?:ed)?|Smoke checks passed|Final checks|Evidence|Live proof|Current evidence|Requirements evidence|Smoke evidence|Tests(?: added| run)?)\\s*:\\s*$",
-    "scope": "line-start",
-    "examples": ["Verification:", "Verified:", "Validation passed:", "Verification run:", "Evidence:", "Verified on the server:"]
-  },
-  {
-    "id": "colon-then-bullet-list",
-    "category": "structure",
-    "label": "Claim, colon, bullet fragments",
-    "description": "Almost every claim is delivered as a stem plus an unranked bullet list of noun fragments rather than as prose; 35-48 of 50 in every shard, and Codex's only organising device.",
-    "regex": "(?m):\\s*\\n\\s*\\n?\\s*-\\s+\\S",
-    "scope": "anywhere",
-    "examples": ["What changed:\\n\\n- Added a clear `rejection_reason`", "Root cause:\\n- We called `A`", "Verification:\\n- `81 passed in 18.52s`", "Persisted:\\n- 5 capabilities\\n- 25 tool contracts"]
-  },
-  {
-    "id": "label-value-bullet",
-    "category": "formatting",
-    "label": "'Label: `value`' verbless bullets",
-    "description": "Bullets are key-value rows wearing a dash \u2014 an identifier and its state with no verb and no article; the dominant bullet shape from shard 8 onward.",
-    "regex": "(?m)^\\s*-\\s+[A-Z][A-Za-z0-9 /()_-]{2,45}:\\s+\\S",
-    "scope": "line-start",
-    "examples": ["- Commit: `003262339ef2ddc7df20b5f83d78e3c3c3931173`", "- Route: `/newhire/onboarding`", "- Focused tests: 13 passed.", "- Health: HTTP 200, runtime ready", "- Current state: `pending_consent`"]
-  },
-  {
-    "id": "past-tense-verb-bullets",
-    "category": "formatting",
-    "label": "Bullet run where every item starts with a past-tense verb",
-    "description": "Consecutive change bullets all opening with the same verb form, turning a diff into a parallel-structure inventory; 6 shards.",
-    "regex": "(?m)^\\s*-\\s+(?:Added|Removed|Updated|Fixed|Replaced|Deployed|Ran|Pushed|Closed|Preserved|Restored|Rebuilt|Persisted|Created|Implemented|Changed|Wired|Moved|Merged|Documented)\\b",
-    "scope": "line-start",
-    "examples": ["- Added a clear `rejection_reason`", "- Removed `_NoopSessionEvalJudge`", "- Restored the execution gate", "- Closed 93 pre-`1.0.307` failed executable backlog rows as `closed_rejected`."]
-  },
-  {
-    "id": "anaphoric-negative-bullets",
-    "category": "formatting",
-    "label": "Consecutive 'No X' / 'It does not' bullets",
-    "description": "Three to ten bullets that all begin with the same negative token, converting absence into a list; 5 shards.",
-    "regex": "(?m)^\\s*-\\s+(?:No\\b|Nothing\\b|Zero\\b|It does \\*{0,2}not\\b|That [a-z ]{0,30}does \\*{0,2}not\\b|Do \\*{0,2}not\\b|I did \\*{0,2}not\\b)",
-    "scope": "line-start",
-    "examples": ["- No reply was sent.", "- It does **not** set `processing_status = system_ops_pending`.", "- Do **not** enable Tau memory.", "- Zero semantic-memory records created."]
-  },
-  {
-    "id": "bold-titlecase-pseudo-header",
-    "category": "formatting",
-    "label": "Bold Title-Case line as a header",
-    "description": "Invented section titles in bold Title Case standing alone on a line in place of markdown headers, often 5-11 of them in a 300-word message; 8 shards.",
-    "regex": "(?m)^\\*\\*[A-Z][A-Za-z]*(?:\\s+[A-Za-z]+){1,5}\\*\\*\\s*$",
-    "scope": "line-start",
-    "examples": ["**Target Flow**", "**Key Correction**", "**Recommended Next Step**", "**Control Plane Map**", "**What Still Needs a Backend**", "**The Key Design Decision**"]
-  },
-  {
-    "id": "numbered-bold-heading",
-    "category": "formatting",
-    "label": "Numbered bold pseudo-headings",
-    "description": "Advisory answers rendered as `1. **Title**` items with a bare bullet list under each, even in a 200-word reply; 5 shards.",
-    "regex": "(?m)^\\s*\\d+\\.\\s+\\*\\*[^*\\n]{2,90}\\*\\*",
-    "scope": "line-start",
-    "examples": ["1. **Payables Workflow**", "2. **ATC dispatches to the right sub-agent**", "1. **Signals Enter The World**", "1. **Owner teaches policy/procedure**"]
-  },
-  {
-    "id": "text-fence-for-prose",
-    "category": "formatting",
-    "label": "```text fence around non-code",
-    "description": "Prose, filenames, UI labels, status lines or invented pseudo-schemas wrapped in a text fence though none of it is code; 7 shards, up to 17 fences in one message.",
-    "regex": "```text\\b",
-    "scope": "anywhere",
-    "examples": ["```text\\n13 passed\\nruff check passed\\n```", "```text\\nApp Review\\npages_show_list\\n```", "```text\\nemail memories\\n-> entities\\n-> observations\\n```"]
-  },
-  {
-    "id": "arrow-pipeline-chain",
-    "category": "formatting",
-    "label": "Arrow chain as a diagram substitute",
-    "description": "Two or more `->` or `\u2192` links strung into a pipeline in place of explaining the flow in a sentence; 12 shards.",
-    "regex": "(?:->|\u2192)\\s*\\S[^\\n]{0,80}?(?:->|\u2192)",
-    "scope": "anywhere",
-    "examples": ["email memories -> entities -> observations -> open loops", "Explorer \u2192 Planner \u2192 model validation \u2192 Queuer", "world fact -> condition builder -> CustomerOpsTick -> Charlie customer_ops Tau agent", "Source -> IdentitySignals -> Entities -> Relationships -> Observations"]
-  },
-  {
-    "id": "absolute-path-md-link",
-    "category": "formatting",
-    "label": "Markdown link to an absolute local path",
-    "description": "Evidence rendered as `[basename.py](/Users/marcusswift/.../file.py:LINE)` \u2014 unclickable for the reader, a citation ritual standing in for quoting the code; all 18 shards.",
-    "regex": "\\]\\(<?/Users/[^)\\n]{5,200}\\)",
-    "scope": "anywhere",
-    "examples": ["[registry.py](/Users/marcusswift/python/clarify_voice/app/services/registry.py:33)", "[topic_attention.py](/Users/marcusswift/python/clarify_voice-wt-topic-attention-query/app/services/users_world/topic_attention.py)", "[config.toml](/Users/marcusswift/.codex/config.toml:210)"]
-  },
-  {
-    "id": "file-line-citation",
-    "category": "evidence",
-    "label": "file.ext:LINE citation suffix",
-    "description": "A line-number anchor appended to a filename as proof-by-pointer, habitual even where the line adds nothing; 9 shards.",
-    "regex": "\\.(?:py|ts|tsx|js|jsx|php|md|json|ya?ml|toml)::?\\d+(?:[-\u2013]\\d+)?\\b",
-    "scope": "anywhere",
-    "examples": ["`service.py:72\u2013117`", "[gateway.py](/Users/.../gateway.py:1488)", "`tau_runtime.py:137`", "`devflow_queuer.py:798`"]
-  },
-  {
-    "id": "n-passed-count",
-    "category": "evidence",
-    "label": "Bare 'N passed' as the whole proof",
-    "description": "Test outcomes reduced to a backticked integer with no command output, no failure count, and no statement of what the tests cover; all 18 shards.",
-    "regex": "\\b\\d{1,4}\\s*(?:/\\s*\\d{1,4}\\s*)?(?:focused\\s+|targeted\\s+|adjacent\\s+|related\\s+|canonical\\s+|deterministic\\s+)?(?:tests?\\s+|assertions?\\s+|checks\\s+|fixtures\\s+|scenarios\\s+)?passed\\b",
-    "scope": "anywhere",
-    "examples": ["`74 passed`", "`103 passed`", "`155 passed in 2.74s`", "135 focused tests passed.", "`178/178 fixtures passed`", "`648 passed, 7 deselected, 13 warnings`"]
-  },
-  {
-    "id": "focused-test-qualifier",
-    "category": "vocabulary",
-    "label": "'focused' / 'targeted' as pre-emptive cover",
-    "description": "An adjective attached to the test count that narrows the claim before anyone questions it; 9 shards, and 'focused' alone appears in up to 10 of 50.",
-    "regex": "\\b(?:focused|targeted)\\s+(?:tests?|suite|regressions?|verification|coverage|contract|unit\\s+test|Playwright|checks|bundle|alignment|subset)\\b",
-    "scope": "anywhere",
-    "examples": ["Focused tests: 13 passed.", "135 focused tests passed.", "Focused verification: 27 tests passed.", "Targeted pytest subset: `12 passed`", "focused compression suite: 75 passed"]
-  },
-  {
-    "id": "compile-lint-filler-proof",
-    "category": "evidence",
-    "label": "ruff / py_compile / git diff --check as proof",
-    "description": "Compilation, lint and whitespace checks reported as if they were evidence of behaviour, including on documentation-only changes; 6 shards.",
-    "regex": "\\b(?:Ruff(?:\\s+check)?|py_compile|git\\s+diff\\s+--check|ESLint|Prettier|Python\\s+compile|Compile\\s+check|Syntax\\s+check|Diff\\s+check|Import\\s+check|compileall)\\b[^.\\n]{0,50}?\\b(?:passed|pass|passes|clean)\\b",
-    "scope": "anywhere",
-    "examples": ["`ruff check` passed on touched Python files.", "Ruff: passed.", "`git diff --check` passed for the doc changes.", "`py_compile` passed on touched runtime modules.", "- Syntax check: passed"]
-  },
-  {
-    "id": "health-json-blob",
-    "category": "evidence",
-    "label": "Health-check JSON pasted as deploy proof",
-    "description": "A raw `{\"status\":\"healthy\",\"version\":...}` string dropped in as the last item of the verification block; 4 shards.",
-    "regex": "\\{\"status\"\\s*:\\s*\"healthy\"",
-    "scope": "anywhere",
-    "examples": ["{\"status\":\"healthy\",\"version\":\"1.0.47\"}", "{\"status\":\"healthy\",\"version\":\"1.1.94\"}", "{\"status\":\"healthy\",\"version\":\"1.0.307\"}"]
-  },
-  {
-    "id": "commit-sha-token",
-    "category": "evidence",
-    "label": "Backticked commit SHA as identity token",
-    "description": "Short and full hashes pasted raw in backticks, often without saying what the commit contains; all 18 shards.",
-    "regex": "`[0-9a-f]{7,40}`",
-    "scope": "anywhere",
-    "examples": ["Commit: `65b6a68`", "commit `5bc1766` is deployed and healthy", "`23dd1989ca251e2f1f9755d3c420ba3fa0a7bced`", "Committed as `81cec787`."]
-  },
-  {
-    "id": "command-arrow-result",
-    "category": "evidence",
-    "label": "`command` -> `N passed` pairing",
-    "description": "The command and its stripped result joined by a bare arrow, in place of showing what ran or what it asserted; 6 shards.",
-    "regex": "`[^`\\n]{2,80}`\\s*(?:->|\u2192)\\s*`?\\s*(?:\\d{1,4}\\s*passed|passed)\\b",
-    "scope": "anywhere",
-    "examples": ["`uv run pytest -q` -> `74 passed`", "`npm test -- billingView.test.ts --run` -> `6 passed`", "`uv run pytest tests/services/sub_agents -q` \u2192 `15 passed`", "`npm run lint` -> passed"]
-  },
-  {
-    "id": "backticked-plain-english",
-    "category": "formatting",
-    "label": "Ordinary English words in backticks",
-    "description": "Status words, counts and plain nouns wrapped in code spans for borrowed authority; backticks are the emphasis device in place of bold, 5-10 spans per message.",
-    "regex": "`(?:passed|healthy|clean|blocked|queued|done|pending|active|failed|resolved|triaged|parked|missing|proposed|claimed|submitted|sent|unchanged|complete)`",
-    "scope": "anywhere",
-    "examples": ["`blocked`", "`parked`", "`healthy`", "`missing`", "`status=provisioned`", "`Included`"]
-  },
-  {
-    "id": "x-not-y-contrast",
-    "category": "rhetoric",
-    "label": "'X, not Y' corrective apposition",
-    "description": "A claim immediately fenced by the rejected alternative; the single most repeated sentence shape in the corpus, present in every shard at 20-46% of messages.",
-    "regex": "(?:,\\s+not\\s+|\\s*\u2014\\s*not\\s+|\\s*\u2013\\s*not\\s+)",
-    "scope": "anywhere",
-    "examples": ["Pricing should come from Stripe, not your DB", "a confidence signal, not a sole authorization mechanism", "It is execution transport\u2014not project activation and not a second task record.", "This is a harness issue, not a meaningful model/compression failure.", "The gate\u2014not a component-only test\u2014decides completion."]
-  },
-  {
-    "id": "rather-than-instead-of",
-    "category": "phrases",
-    "label": "'rather than' / 'instead of'",
-    "description": "The same contrast when a bare comma won't fit; Codex prefers 'instead of', and both cluster in the same messages as the comma form; all 18 shards.",
-    "regex": "\\b(?:rather than|instead of)\\b",
-    "scope": "anywhere",
-    "examples": ["repair rather than rebuild", "To make this operational instead of theoretical", "guarded by custom validators rather than a true discriminated component payload model", "chooses it, instead of inventing a new provider path"]
-  },
-  {
-    "id": "bolded-negation",
-    "category": "formatting",
-    "label": "Bold used to shout 'not'",
-    "description": "Bold is reserved almost entirely for the negation rather than for emphasis \u2014 in one shard 20 of 74 bold spans are a bare **not**; 9 shards.",
-    "regex": "\\*\\*(?:not|no|never)\\b[^*\\n]{0,45}\\*\\*",
-    "scope": "anywhere",
-    "examples": ["They do **not** start provisioning.", "we should **not** use your personal GitHub credentials", "this URL is **not readable**", "do **not** migrate yet", "It does **not** currently store `agent_display_name`."]
-  },
-  {
-    "id": "so-restatement-pivot",
-    "category": "rhetoric",
-    "label": "'So ...' land-the-point restatement",
-    "description": "A paragraph opening with 'So' that re-says the paragraph above in compressed form, usually as the closer restating the opening verdict; 12 shards.",
-    "regex": "(?m)^\\s*So(?:\\s+yes|\\s+no|,|:|\\s+the\\b|\\s+this\\b|\\s+it\\b|\\s+for\\b|\\s+my\\b|\\s+in\\b|\\s+among\\b|\\s+a\\b)",
-    "scope": "anywhere",
-    "examples": ["So the snapshot is coherent and green.", "So yes: this materially improves the Playwright suite.", "So: **feature, not bug, but we need execution plumbing for the return loop.**", "So the honest answer is:", "So the short version: the poller found 58 due historical tasks, but none were eligible to run."]
-  },
-  {
-    "id": "that-gives-benefit-closer",
-    "category": "rhetoric",
-    "label": "'That gives / keeps / lets us ...' value restatement",
-    "description": "A closing sentence re-asserting the value of what was just described, adding no new information; 6 shards.",
-    "regex": "(?m)^\\s*(?:That|This)\\s+(?:gives|lets|keeps|makes|preserves|matches|maps|measures|also simplifies|means)\\b",
-    "scope": "anywhere",
-    "examples": ["That gives us a clean architecture: sandboxing handles environment isolation.", "That keeps Topic clean.", "This keeps each repair measurable.", "That gives you the final state you want: shared repo, live Hetzner server, customer local clone.", "That preserves the human bottleneck for now without making the system guess."]
-  },
-  {
-    "id": "thats-the-verdict-stamp",
-    "category": "phrases",
-    "label": "\"That's the ...\" verdict stamp",
-    "description": "A deictic stamp applied to the sentence just written, converting a statement into a pronouncement; 5 shards.",
-    "regex": "\\bThat(?:'|\u2019)?s\\s+(?:the|exactly|not|a|precisely|why|cleaner|our)\\b",
-    "scope": "anywhere",
-    "examples": ["That's the failure point.", "That's the right instinct.", "That's not thinking, it's formatting.", "That's the proof we still need.", "That's the cautionary precedent: loading \u2260 nudging."]
-  },
-  {
-    "id": "proves-x-not-y",
-    "category": "evidence",
-    "label": "'This proves X; it does not prove Y'",
-    "description": "A fixed two-clause construction that certifies a result and withdraws half of it in the same sentence; 6 shards.",
-    "regex": "\\b(?:proves|verifies|confirms)\\b[^.\\n]{0,150}?(?:;|,|\u2014|\u2013)\\s*(?:it\\s+|but\\s+it\\s+|and\\s+)?(?:does\\s+not|do\\s+not|not)\\b",
-    "scope": "anywhere",
-    "examples": ["This proves the schema and deterministic orchestration code; it does not yet prove that the live root model invokes the tool.", "This verifies receipt and visibility in Claire\u2014not that Claire has triaged or acted on them yet.", "This proves correct routing, not execution of the change-request procedure.", "This verifies submission and Sent-folder persistence, not recipient-server delivery or reading."]
-  },
-  {
-    "id": "does-not-prove",
-    "category": "evidence",
-    "label": "'does not (yet) prove'",
-    "description": "The scope-fence verb phrase used to bound every positive claim, whether or not the user asked for the bound; 8 shards.",
-    "regex": "\\b(?:does|do|did)\\s+not\\s+(?:yet\\s+)?(?:prove|verify|claim|mean|establish|include|exercise)\\b",
-    "scope": "anywhere",
-    "examples": ["This does not prove every Charlie capability works.", "It does not yet verify Courtney's own self-assignment/account behavior or production.", "they do not prove the actual browser route integrates", "It does not prove a deployed build or an Alembic upgrade against PostgreSQL."]
-  },
-  {
-    "id": "remains-unproven",
-    "category": "sentence-structure",
-    "label": "'remains unverified / remains active' standing debt",
-    "description": "The standing-qualifier verb attaching an unfinished item to every report; 'remain(s)' appears in 17-29 of 50 in the later shards, often twice in one message.",
-    "regex": "\\bremain(?:s|ed|ing)?\\s+(?:un(?:proven|verified|tested|implemented|changed|clear|started|resolved)|not\\b|outstanding|local(?:-only)?|pending|blocked|absent|active|clean|intact|material|untouched|limited)\\b",
-    "scope": "anywhere",
-    "examples": ["Those capabilities remain unproven.", "remains unverified", "remains local only", "Goal remains active.", "The verified claim remains limited to the deployed pre-close checkpoint."]
-  },
-  {
-    "id": "remaining-limitation-label",
-    "category": "closings",
-    "label": "'Remaining limitation:' labelled subtraction",
-    "description": "The last thing the reader sees is a labelled subtraction from the claim just made; 8 shards, and the terminal slot in up to 27 of 50.",
-    "regex": "(?m)^\\s*(?:Remaining limitations?|Remaining proof|Remaining concern|Remaining cleanup|Remaining gap|Remaining meaningful gap|Remaining risk|Residual note|Residual risk|Still unverified|Still unproven|Not yet implemented|Standing limitation|Blocked/unproven|What is not verified enough|What I would not claim yet)\\s*:",
-    "scope": "anywhere",
-    "examples": ["Remaining limitation: full scheduling still cannot complete because FileMaker contains no `orientation_scheduled` template.", "Residual risk: all four deployed staging SHAs differ from local HEAD", "Still unverified: whether the current Observation node's emulation produces the same result as a human.", "Remaining meaningful gap:"]
-  },
-  {
-    "id": "one-caveat-frame",
-    "category": "closings",
-    "label": "'One caveat:' pre-counted afterthought",
-    "description": "The real risk demoted to a trailing paragraph announced with a counted noun \u2014 always one or two, never three; 9 shards.",
-    "regex": "(?:^|(?<=\\.)\\s+)(?:One|Two|Three)\\s+(?:important\\s+|technical\\s+|separate\\s+|more\\s+|real\\s+|genuine\\s+|repo hygiene\\s+|documentation\\s+|design\\s+|final\\s+)?(?:caveat|note|nuance|thing|issue|detail|limitation|flag|warning|point|consequence|precision|cleanup|heads-up|quirk|decision)s?\\b[^.\\n]{0,70}?:",
-    "scope": "anywhere",
-    "examples": ["One caveat: the script still intentionally bumps to `cpx21` if `INCLUDE_DOCLING=true`", "One note: full `npx tsc --noEmit` still fails, but on existing unrelated repo errors.", "One important caveat: local files show configured workflows and code owner rules.", "Two warnings:", "One separate issue surfaced:"]
-  },
-  {
-    "id": "important-label-caveat",
-    "category": "closings",
-    "label": "'Important distinction:' labelled qualifier",
-    "description": "A caveat bolted on as a labelled afterthought rather than stated next to the claim it qualifies; 8 shards, with the label rotating through distinction/boundary/nuance/finding.",
-    "regex": "(?m)^\\s*Important(?:\\s+(?:distinction|boundary|caveat|note|finding|nuance|precision|pattern|detail|side effect|contract|design rule|billing caveat|process issue|points to settle))?\\s*[:.]",
-    "scope": "anywhere",
-    "examples": ["Important distinction: these are all session-scoped live tools.", "Important boundary: this currently proves the pipeline mechanics, persistence, resumability, deterministic gates, and failure behavior.", "Important: I did not mark anything skipped, and I did not greenwash a broken UI into passing.", "Important finding:", "Important nuance: don't rely on the hourly rollup for the current conversation."]
-  },
-  {
-    "id": "note-label-caveat",
-    "category": "closings",
-    "label": "'Note:' / 'Local note:' trailing label",
-    "description": "The same demotion move under a shorter label, always last, never integrated into the sentence it qualifies; 7 shards.",
-    "regex": "(?m)^\\s*(?:Note|Local note|Operational note|Quality note|Caveats?|Residual note|Bottom line|Overall|Summary)\\s*:",
-    "scope": "anywhere",
-    "examples": ["Note: both repos already have broader unrelated dirty worktree changes.", "Local note: there is stashed/uncommitted customer-ops work preserved locally; I did not deploy or discard it.", "Quality note: the artifact is now functional and materially useful, but probably still too dense for your \u201cNB only\u201d bar.", "Bottom line:"]
-  },
-  {
-    "id": "material-blocker-label",
-    "category": "closings",
-    "label": "'The material blocker is'",
-    "description": "A named blocker appended as a third coda sentence, using a fixed adjective set that adds weight without adding fact; 4 shards.",
-    "regex": "\\b(?:material blocker|current blocker|remaining blocker|only remaining blocker|The blocker is)\\b",
-    "scope": "anywhere",
-    "examples": ["The material blocker is that the deployed model currently supports only human `staff` memberships.", "Nylas/relay delivery evidence remains the material blocker.", "The current blocker is orchestration convergence, not MiniMax capability or Drew's process logic.", "The only remaining blocker is that the available browser profile is signed out."]
-  },
-  {
-    "id": "claim-then-but-retraction",
-    "category": "sentence-structure",
-    "label": "'X, but Y is still not ...' two-clause verdict",
-    "description": "An assertion immediately halved by a concessive clause, so the win never gets the last word; 7 shards, and the whole message shape in up to 20 of 50.",
-    "regex": "\\b(?:but|however)\\b[^.\\n]{0,140}?\\b(?:still|remains?|not yet|unverified|unproven|unchanged|incomplete|ineffective)\\b",
-    "scope": "anywhere",
-    "examples": ["Erin made material diagnostic progress, but is still ineffective end to end.", "The 13 focused tests pass, but they only confirm the reverted baseline\u2014not live effectiveness.", "The code is deployed correctly, but the live Kati\u2192Dessi staging workflow is blocked.", "The existing admin dashboard tests do pass, but they are insufficient for this requirement."]
-  },
-  {
-    "id": "semicolon-claim-caveat-splice",
-    "category": "sentence-structure",
-    "label": "Semicolon welding claim to caveat",
-    "description": "The claim and its retraction fused into one sentence with a semicolon, avoiding a second sentence and burying the qualifier; 28-31 of 50 in shards 13-18.",
-    "regex": ";\\s+(?:it|they|this|that|the|no|nothing|however|I|we|future|production|canonical|reconciliation|current|existing|unrelated|remaining|automatic|post-run)\\b",
-    "scope": "anywhere",
-    "examples": ["Putnam source checkout was unchanged; no push or deployment.", "So this was not the test or tool failing; it was the final model call hitting Anthropic rate limit.", "The verified claim remains limited to the local three-coder panel; reconciliation and knowledge creation remain unproven.", "No further changes were made; the prior claims remain scoped to the observed deployed artifacts."]
-  },
-  {
-    "id": "therefore-pivot",
-    "category": "rhetoric",
-    "label": "'Therefore,' pivot to the summarizing claim",
-    "description": "A connective that introduces a restatement of what the preceding paragraph already established; 5 shards.",
-    "regex": "(?m)(?:^|(?<=\\.)\\s+)Therefore[,:]?\\s",
-    "scope": "anywhere",
-    "examples": ["Therefore, the precise claim is: each bounded core-system objective set has trustworthy local evidence.", "Therefore, deployment is complete; automatic billing for a newly generated model call remains unverified until the later smoke.", "Therefore, the manual test-mode release canary is verified.", "Therefore:"]
-  },
-  {
-    "id": "x-now-verbs",
-    "category": "sentence-structure",
-    "label": "'X now does Y' present-tense state claim",
-    "description": "Every change reported as a permanent new property of the system rather than as a diff; 6 shards, up to 23 of 50.",
-    "regex": "\\bnow\\s+(?:returns|shows|has|includes|persists|routes|requires|supports|exposes|emits|compresses|detects|proposes|runs|passes|follows|uses|wins|covers|describes|defers|saves?|reports|matches|stores|creates|starts|enforces|handles|treats|accepts|rejects|spells|composes|scores|proves|waits|initiates|reads|writes|makes|means|lists|tracks|logs|sends|searches|restores?)\\b",
-    "scope": "anywhere",
-    "examples": ["The Usage section now shows one weekly usage-credit progress bar", "`_add_relationship` now proposes a candidate first", "Tau now compresses OpenAI-style dict tool outputs, not just typed Tau `ToolResultMessage` objects", "Feedback submissions now save locally first", "Planner now follows the sibling subagent pattern."]
-  },
-  {
-    "id": "scare-quoted-strawman",
-    "category": "rhetoric",
-    "label": "Quoted position nobody stated, then rejected",
-    "description": "A paraphrase of a stance the user never took, put in scare quotes so it can be negated; 4 shards.",
-    "regex": "\\bnot\\*{0,2}\\s+[\u201c\"][^\u201d\"\\n]{3,90}[\u201d\"]",
-    "scope": "anywhere",
-    "examples": ["the fix is not \u201cdumb down the output.\u201d", "So the core problem is **not** \u201cGraphWalks failed.\u201d", "The key repair was not \u201cteach Claire these 11 answers.\u201d", "So the repair is not \u201cprompt Planner harder.\u201d"]
-  },
-  {
-    "id": "honest-status-framing",
-    "category": "tone",
-    "label": "Labelling one paragraph 'honest'",
-    "description": "Flags its own truthfulness as a section label, implying the rest was not; 6 shards.",
-    "regex": "\\b(?:the honest (?:status|answer|proof|conclusions?|read|tradeoff|blockers?|current status)|Here(?:'|\u2019)s the honest|Current honest status|So the honest|My honest (?:read|advice)|to be straight with you|Straight answer|the factual assessment)\\b",
-    "scope": "anywhere",
-    "examples": ["So the honest current status is:", "So the honest answer is:", "Here's the honest status.", "Current honest status:", "So the honest proof is:"]
-  },
-  {
-    "id": "real-actual-certifier",
-    "category": "vocabulary",
-    "label": "'the real / the actual / a genuine' as certification",
-    "description": "An intensifier asserting that this run, tool or test is the genuine one \u2014 implicitly conceding that earlier ones were not; all 18 shards, 12-26 of 50 per shard.",
-    "regex": "\\b(?:the|a|an|this|that)\\s+(?:real|actual|genuine)\\s+[a-z`\\[][\\w`-]*",
-    "scope": "anywhere",
-    "examples": ["the real Explorer subagent", "a real proof plane", "The actual break was in the sidecar", "a genuine remaining blocker", "the actual Queuer extension", "the real defects this exposed"]
-  },
-  {
-    "id": "exact-certifier",
-    "category": "vocabulary",
-    "label": "'the exact X' precision claim",
-    "description": "A bare intensifier claiming a precision the sentence does not otherwise demonstrate; almost always deletable. 15-21 of 50 in shards 12-18.",
-    "regex": "\\b(?:the|this|that|his|her|your|their|its|one)\\s+exact\\s+[a-z`\\[]",
-    "scope": "anywhere",
-    "examples": ["the exact staging HCAdmin account", "this exact staff-about-client email", "the exact deployed runtime/tool registry", "the exact request sent to MiniMax", "the exact local shell function, SSH route, production container, persona, and interactive TUI"]
-  },
-  {
-    "id": "readback-coinage",
-    "category": "vocabulary",
-    "label": "'readback' as a bare noun of proof",
-    "description": "A coined evidence noun used with no explanation, standing in for saying what was queried and what came back; 8 shards, up to 19 of 50.",
-    "regex": "\\bread[- ]?backs?\\b",
-    "scope": "anywhere",
-    "examples": ["authoritative readback", "Database readback confirms 83 pending", "Live readback confirmed", "Readback now shows:", "Authoritative before/after Action-state readback."]
-  },
-  {
-    "id": "undefined-abstraction-with-the",
-    "category": "vocabulary",
-    "label": "Coined abstract noun used with 'the', never defined",
-    "description": "seam / spine / lane / plane / surface / shape / boundary / substrate / primitive / blast radius used as if the reader already knows what they name; every shard reports this cluster.",
-    "regex": "\\bthe\\s+(?:[a-z][a-z-]*\\s+){0,2}(?:seams?|spine|lanes?|planes?|substrate|primitives?|surfaces?|shape|boundar(?:y|ies)|gates?|blast radius|control plane|proof plane|source of truth|north star|center of gravity|callable surface|tool surface)\\b",
-    "scope": "anywhere",
-    "examples": ["the event spine", "the callable surface", "the shade gate", "the trust boundary", "the control-plane business logic", "the completion seam already exists"]
-  },
-  {
-    "id": "durable-canonical-authoritative",
-    "category": "vocabulary",
-    "label": "durable / canonical / authoritative / deterministic",
-    "description": "Engineering-virtue adjectives applied to memory, state, records and endpoints almost interchangeably, as self-praise rather than description; all 18 shards.",
-    "regex": "\\b(?:durabl[ey]|durably|canonical|authoritative|deterministic(?:ally)?|first-class|source-backed|idempotent|read-only)\\b",
-    "scope": "anywhere",
-    "examples": ["durable memory", "canonical `main`", "authoritative readback", "deterministic gates", "a first-class, durable event", "a genuinely read-only role"]
-  },
-  {
-    "id": "clean-as-praise",
-    "category": "vocabulary",
-    "label": "'clean' as the quality verdict",
-    "description": "Architecture, answers, boundaries and worktrees all graded 'clean' or 'cleanly'; 8 shards.",
-    "regex": "\\b(?:clean|cleaner|cleanest)\\s+(?:architecture|boundar(?:y|ies)|decision boundary|answer|model|path|split|rule|fix|sequence|artifact|implementation|separation|repair|commit boundary)\\b|\\bmaps cleanly\\b|\\b(?:Working tree|Tree|Worktree|Repository) is clean\\b",
-    "scope": "anywhere",
-    "examples": ["That gives us a clean architecture", "The clean path is:", "the clean answer is", "maps cleanly into the new DevFlow primitive model", "Working tree is clean.", "Tree is clean."]
-  },
-  {
-    "id": "green-as-state",
-    "category": "vocabulary",
-    "label": "'green' / 'false green' as the unit of success",
-    "description": "Test and CI outcomes reduced to a colour, plus the coined 'false green' / 'greenwash' used undefined; 6 shards.",
-    "regex": "\\b(?:green|greenwash(?:ing|ed)?|false[- ]greens?|falsely green|gate-green|release-green|green-but-broken)\\b",
-    "scope": "anywhere",
-    "examples": ["All TODO contracts are now green.", "Both trees fixed and green.", "I did not greenwash a broken UI into passing.", "five concrete green-but-broken paths", "Read-only adversarial review found these open false greens:"]
-  },
-  {
-    "id": "pre-existing-breakage-disclaimer",
-    "category": "evidence",
-    "label": "Failures partitioned as pre-existing and not mine",
-    "description": "Existing breakage separated from this change's breakage, always in the closing paragraph and always with an exculpatory clause; 5 shards.",
-    "regex": "\\b(?:pre-existing|existing unrelated|unrelated (?:existing )?(?:repo |vendor )?)\\b[^.\\n]{0,90}?\\b(?:failures?|errors?|noise|warnings?|deprecations?|breakage|issue|assertions)\\b",
-    "scope": "anywhere",
-    "examples": ["The deprecations are the existing PHP 8.5/vendor warnings, not failing assertions.", "still fails, but on existing unrelated repo errors outside this change set", "three failures are pre-existing Engine-import test-environment failures", "Remaining PHP output is existing vendor/PHP 8.5 deprecation noise, not failing tests."]
-  },
-  {
-    "id": "root-cause-label",
-    "category": "structure",
-    "label": "'Root cause:' labelled diagnosis block",
-    "description": "A labelled cause block, usually preceded by negating the user's assumed cause and followed by a `Fixed:` list ending in a green count; 6 shards.",
-    "regex": "(?m)^\\s*(?:Root cause|Cause|Current cause|Likely causes|The actual problem is|The problem was|Diagnosis)\\s*[:(]",
-    "scope": "anywhere",
-    "examples": ["Root cause: Clarify Voice already tried to mark inbound emails read, but it was calling a Clarity backend PATCH route that did not exist.", "Root cause (confirmed, not guessed)", "Likely causes:", "The actual problem is:"]
-  },
-  {
-    "id": "id-hedged-recommendation",
-    "category": "tone",
-    "label": "\"I'd <verb>\" design opinion",
-    "description": "The one hedge Codex uses in advisory mode, always attached to a fully-formed recommendation it then does not act on; 9 shards.",
-    "regex": "\\bI(?:'|\u2019)?d\\s+(?:make|keep|treat|take|separate|frame|narrow|put|refactor|design|split|choose|start|implement|replace|sharpen|model|phrase|remove|add|avoid|prefer|probably|fix|say|want|bet|lean)\\b|\\bI would\\s+(?:not\\b|start|keep|make|avoid|treat|restructure|add|bet|deliberately|use|run)\\b",
-    "scope": "anywhere",
-    "examples": ["I'd frame it as **Developer Mode / Self-Update Workflow**", "I'd separate these into three distinct operator tools with clear ownership:", "I would not make the browser UI talk directly to DevFlow SQLite", "I'd choose **Option B** if we're going to rely on this path long term.", "I would not use background music."]
-  },
-  {
-    "id": "my-recommendation-label",
-    "category": "tone",
-    "label": "'My recommendation:' / 'My read:' possessive label",
-    "description": "The opinion announced under a possessive label rather than just stated; one message uses 'My vote:' five times; 6 shards.",
-    "regex": "\\bMy\\s+(?:recommendation|read|vote|assessment|expectation|lean|pick|preferred path|honest read|model|instinct)\\b\\s*[:.]|\\bMy recommendation is\\b|\\bI lean\\b",
-    "scope": "anywhere",
-    "examples": ["My recommendation: reuse the existing `memory_proposed` event internally for now", "My vote:", "So my read is:", "My assessment:", "My preferred path"]
-  },
-  {
-    "id": "prescriptive-should-not",
-    "category": "tone",
-    "label": "'X should not Y' spec-draft register",
-    "description": "Advisory answers built almost entirely from normative should-clauses with no evidence attached, reading as spec drafts rather than answers; 7 shards.",
-    "regex": "\\bshould\\s+(?:not|never|be|own|stay|become|produce|remain|sit|carry|route|only|always|generally not|ideally|move|come)\\b",
-    "scope": "anywhere",
-    "examples": ["Doctor should not repair by default", "Recovery should own DevFlow operational state, not project code", "Explorer should not produce source units that approximate DevFlow ideas/stories.", "Business Ops should not say:", "primitive agents should not independently decide global relevance"]
-  },
-  {
-    "id": "want-me-to-handback",
-    "category": "handback",
-    "label": "'Want me to ...?' permission question",
-    "description": "Ends by offering to do the thing it just argued for, usually as a two-option menu with no recommendation attached; 14 of 50 in one shard, 7 in another.",
-    "regex": "\\b(?:Want me to\\b|Would you like me to\\b|say the word\\b|say go\\b|Recommend I:|Should I\\b[^.\\n]{0,60}\\?)",
-    "scope": "anywhere",
-    "examples": ["Want me to check what else is currently sitting on `ms_dev` ahead of prod from DevFlow, or wire up option 1?", "Want me to resume it?", "Want me to proceed?", "say the word", "Want me to set those?"]
-  },
-  {
-    "id": "authorization-gate-handback",
-    "category": "handback",
-    "label": "Asking for authorization to continue",
-    "description": "The next step is the user granting permission for work already argued for and specified; 6 shards, heavy in 14-18.",
-    "regex": "\\b(?:explicit(?:ly)?\\s+auth(?:orization|orized)|requires?\\s+(?:your\\s+)?(?:explicit\\s+)?(?:authorization|approval)|awaiting\\s+your\\s+authorization|needs?\\s+explicit\\s+authorization|authorize\\s+(?:deployment|pushing|committing|the)|your\\s+approval|approval\\s+before|deployment\\s+authorization)\\b",
-    "scope": "anywhere",
-    "examples": ["Per `agent-autonomy-preferences.md`, deployment needs explicit authorization", "The next best step is awaiting your authorization.", "The next best step is explicit approval to promote that commit to production.", "The next best step is to authorize pushing `d89f77f9` to dev and staging."]
-  },
-  {
-    "id": "user-chore-handback",
-    "category": "handback",
-    "label": "Next step assigned to the user or a third party",
-    "description": "The prescribed 'best next step' is work for a human \u2014 clicking, replying, confirming, or another named person acting; 7 shards.",
-    "regex": "\\b(?:next best step is (?:for|to have|your)\\b|Best next step: (?:tell|reply|send|have|refresh|sign in|click|confirm|start|run|hard refresh|say|give)\\b|Tell me (?:when|whether)\\b|Reply (?:and|with|naturally|to)\\b|Send me\\b|Have (?:Chris|the team|each|[A-Z][a-z]+)\\s)",
-    "scope": "anywhere",
-    "examples": ["Best next step: hard refresh `https://app.devflow.ing` with `Cmd+Shift+R`", "The next best step is for Sherry to confirm Don received it", "Send me the destination phone number for transfers, and I'll configure it as:", "Have Chris click **Submit responses now**.", "Tell me whether the validator says valid."]
-  },
-  {
-    "id": "self-blame-confession",
-    "category": "tone",
-    "label": "Confession set piece after pushback",
-    "description": "Flat admission, causal narrative of its own error, then a promise expressed as a procedural rule \u2014 always followed by a bolded correct answer rather than by doing the work; 12 shards.",
-    "regex": "\\b(?:That was (?:on me|wrong)|I was wrong|I(?:'|\u2019)m sorry|My bad|I overcorrected|I over-ran that|I drifted into|I should have|I should not have|I incorrectly|I made an unauthorized|no excuse for that|I was sloppy|I over-sold|That was incomplete work on my part)\\b",
-    "scope": "anywhere",
-    "examples": ["That was on me.", "You were right. The bug was real.", "My bad.", "I should have stated that more prominently.", "I incorrectly treated \u201cdo it\u201d as permission to replace the voice stack."]
-  },
-  {
-    "id": "progress-percentage-selfscore",
-    "category": "tone",
-    "label": "Self-assigned percentage or letter grade",
-    "description": "An invented, unfalsifiable completion score with no stated denominator or method; 4 shards, up to 16 of 50 as the literal last line.",
-    "regex": "(?m)^\\s*Progress:\\s*\\*{0,2}\\d{1,3}\\s*%|\\bparity estimate:?\\s*\\*{0,2}~?\\d{1,3}(?:\\s*-\\s*\\d{1,3})?\\s*%|\\b(?:Efficiency|Reviewer quality|Reporting quality|Workflow architecture|Autonomous reliability):\\s*\\*\\*[A-D][+-]?\\*\\*",
-    "scope": "anywhere",
-    "examples": ["Progress: 100%.", "Progress: 97% complete.", "Current parity estimate: **~93%**.", "Efficiency: **D**", "Progress: 100% diagnosis, 0% CallKit patch."]
-  },
-  {
-    "id": "false-precision-metrics",
-    "category": "evidence",
-    "label": "Spurious-precision token/byte/millisecond counts",
-    "description": "Wall-clock, token and byte figures given to full precision as reassurance, where the point is qualitative; 4 shards.",
-    "regex": "\\b\\d{1,3}(?:,\\d{3})+\\s+(?:tokens|bytes|ms|assertions|input tokens|output tokens)\\b|\\bWall clock:|\\bGoal (?:usage|accounting)\\b",
-    "scope": "anywhere",
-    "examples": ["Final goal usage: 1,128,791 tokens, about 40 minutes 33 seconds elapsed", "Wall clock: `1:51.77`", "54,449 bytes, MD5 `ed4b5f2818dd0065777a0567320265bd`", "1,652,565 tokens and 6,418,026 ms"]
-  },
-  {
-    "id": "only-scope-limiter",
-    "category": "sentence-structure",
-    "label": "'I only touched / only X was verified'",
-    "description": "A restrictive scope limiter narrowing the claim inside the sentence that makes it; 6 shards, 'only' in 22-29 of 50.",
-    "regex": "\\bI\\s+only\\s+(?:touched|read|worked|verified|changed|ran|inspected|selected)\\b|\\bonly\\s+the\\s+[^.\\n]{0,70}?\\s+(?:was|were|is|are)\\s+verified\\b|\\bonly\\s+`[^`\\n]{1,30}`\\s+is\\s+verified\\b",
-    "scope": "anywhere",
-    "examples": ["I only touched the API-key lane files above.", "I only read files.", "Reconciled: only the isolated local fixture was verified\u2014not the complete canonical Observation node.", "Reconciled against the exact evidence: only `T-R1` is verified."]
-  },
-  {
-    "id": "still-standing-debt",
-    "category": "sentence-structure",
-    "label": "'still not / still dirty' held-over item",
-    "description": "A held-over unfinished item from a previous turn attached to the current report; 6 shards, up to 27 of 50.",
-    "regex": "\\bstill\\s+(?:not|no|needs|requires|fails|remains?|unverified|uncommitted|dirty|blocked|missing|outstanding|pending|does not|isn(?:'|\u2019)t|sits|has)\\b",
-    "scope": "anywhere",
-    "examples": ["Still no memory, identity, goal, or task persistence added.", "Worktree is still dirty with real code changes plus generated/test artifact noise", "full `npx tsc --noEmit` still fails", "Workspace is still uncommitted.", "Keystone still sits on the session branch."]
-  },
-  {
-    "id": "verdict-before-evidence",
-    "category": "structure",
-    "label": "Verdict first, evidence arranged to support it",
-    "description": "Every message states its conclusion in the first sentence and then supplies bullets consistent with it; no message builds to a finding, and the ordering verdict \u2192 evidence \u2192 caveat never varies. Reported by all 18 shards but not capturable as a string.",
-    "regex": null,
-    "scope": "first-200-chars",
-    "examples": ["Fixed and verified.", "Implemented and proved task 08.", "Full closure gate passed.", "Provisioning is now live and verified for MSPSI."]
-  },
-  {
-    "id": "opener-restated-as-closer",
-    "category": "structure",
-    "label": "Thesis stated twice, top and bottom",
-    "description": "The closing paragraph re-says the opening verdict in different words \u2014 via 'So:', a 'That gives us' benefit line, or the Turn summary \u2014 so roughly half of every corpus says its point twice; 9 shards.",
-    "regex": null,
-    "scope": "anywhere",
-    "examples": ["Yes, we can serve the customer's repo through Clarity ... / So: yes, Clarity can serve the setup path.", "No. They are not all covered by Playwright tests yet. / So the honest status is: we do not yet have Playwright coverage for all extracted user stories.", "The fix remains local only at commit `db79db69` / Turn summary: The explicit CHI-16 selector is locally implemented and verified."]
-  }
+ {
+  "id": "bare-verdict-fragment-opener",
+  "category": "openings",
+  "label": "One-word verdict fragment",
+  "description": "The message opens with a single past-participle or status word punctuated as its own sentence, so the verdict lands before any evidence; reported as the dominant opener in every shard.",
+  "regex": "^\\s*(?:\\*\\*)?(?:Done|Fixed|Implemented|Reconciled|Completed|Confirmed|Resolved|Removed|Reverted|Handled|Deployed|Pinned|Changed|Corrected|Tested|Verified|Cleaned|Rebuilt|Narrowed|Delegated|Traced|Held|Killed|Recorded)(?:\\*\\*)?\\s*[.:]",
+  "scope": "first-200-chars",
+  "examples": [
+   "Done.",
+   "Fixed.",
+   "Implemented.",
+   "Reconciled.",
+   "Recorded.",
+   "Confirmed."
+  ]
+ },
+ {
+  "id": "participle-chain-opener",
+  "category": "openings",
+  "label": "Conjoined past-participle telegraph",
+  "description": "Two to five past participles chained as the whole first sentence, compressing the entire work report into a verb list with no subject; found in 14 shards.",
+  "regex": "^\\s*(?:Implemented|Fixed|Deployed|Committed|Updated|Done|Completed|Added|Removed|Created|Built|Closed|Changed|Reverted|Corrected|Reconciled|Reviewed)(?:\\s*,)?\\s+(?:and\\s+)?(?:deployed|pushed|committed|verified|merged|tested|proved|live-verified|redeployed|reinstalled|audited|integrated|aligned|pinned|smoke-tested)\\b",
+  "scope": "first-200-chars",
+  "examples": [
+   "Implemented and deployed.",
+   "Fixed and deployed.",
+   "Implemented, pushed, and deployed.",
+   "Implemented, committed, pushed, and deployed.",
+   "Confirmed and aligned.",
+   "Fixed, tested, committed, pushed, and redeployed."
+  ]
+ },
+ {
+  "id": "subjectless-past-verb-opener",
+  "category": "openings",
+  "label": "Subject-elided past-tense verb opener",
+  "description": "The first word is a bare past-tense verb with the 'I' deleted, followed directly by the deliverable; the near-template 'Implemented the <adj> <noun>' recurs across all shards.",
+  "regex": "^\\s*(?:Implemented|Added|Updated|Fixed|Removed|Created|Built|Closed|Continued|Advanced|Completed|Documented|Ran|Moved|Restored|Revamped|Filled|Cleaned|Folded|Kept|Triggered|Opened|Encoded|Checked|Noted|Picked|Stopped|Unskipped|Disabled|Selected)\\s+(?:the|a|an|all|another|it|this|these|my|his|her|their|our|from|in|locally|`|[A-Z])",
+  "scope": "first-200-chars",
+  "examples": [
+   "Implemented the memory write path.",
+   "Removed the auto top-up row from the Funds balance card.",
+   "Continued the compression parity work and closed another behavior gap.",
+   "Closed another production-readiness gap.",
+   "Documented the sub-agent plan.",
+   "Added Headroom-style fail-open protection for Tau's direct compression path."
+  ]
+ },
+ {
+  "id": "polarity-token-opener",
+  "category": "openings",
+  "label": "Bare Yes/No verdict token",
+  "description": "A one-word polarity answer punctuated as its own sentence before the real content; every shard reports it, typically 12-20 of 50 messages.",
+  "regex": "^\\s*(?:\\*\\*)?(?:Yes|No|Not yet|Not fully|Partly|Partially true|Mostly|Correct|Exactly|Right|Absolutely|Agreed)(?:\\*\\*)?\\s*[.,:;\u2014\u2013-]",
+  "scope": "first-200-chars",
+  "examples": [
+   "Yes.",
+   "No.",
+   "Yes, mostly.",
+   "Yes\u2014with one additional integration layer.",
+   "Partly.",
+   "No\u2014not sufficiently.",
+   "Agreed. It's noise."
+  ]
+ },
+ {
+  "id": "yes-then-walkback",
+  "category": "rhetoric",
+  "label": "Affirm, then immediately qualify",
+  "description": "The opening 'Yes' is reversed or fenced in the same sentence by 'but', 'with one correction', or a partial hedge, so the verdict token carries no information; 8 shards.",
+  "regex": "^\\s*(?:\\*\\*)?(?:Yes|No)\\b[^.\\n]{0,70}?[,.\u2014\u2013-]\\s*(?:but\\b|with one (?:important )?correction|with caveats|not (?:fully|entirely|all)\\b|mostly\\b|partly\\b|and no\\b|though\\b)",
+  "scope": "first-200-chars",
+  "examples": [
+   "Yes, with one important correction: **the current Hours plans do not trigger provisioning.**",
+   "Yes, but not as the current static default.",
+   "No, not fully yet.",
+   "Yes and no.",
+   "Yes, with caveats.",
+   "Yes, mostly."
+  ]
+ },
+ {
+  "id": "youre-right-deference-opener",
+  "category": "openings",
+  "label": "Concede the user was right first",
+  "description": "Opens by ratifying the user's correctness or conceding an error before any content of its own; present in 15 of 18 shards.",
+  "regex": "^\\s*(?:You(?:'|\u2019)?re right|You are right|You were right|You(?:'|\u2019)?re correct|You are correct|You are exactly right|Your (?:instinct|instincts|read|sequencing|distinction)\\b)",
+  "scope": "first-200-chars",
+  "examples": [
+   "You're right. I drifted into solving the content by hand, which is the wrong move here.",
+   "You were right. My earlier read was wrong because I checked SJI first.",
+   "You're right to call this out. I had not run the seed after the prior deploy work.",
+   "Your instinct is exactly right, and the audit proves it's a real gap \u2014 not a hypothetical one.",
+   "You're right to be pissed."
+  ]
+ },
+ {
+  "id": "understood-acknowledged-opener",
+  "category": "openings",
+  "label": "Compliance token opener",
+  "description": "Opens with 'Understood' / 'Acknowledged' / 'Noted' absorbing an instruction, usually followed by parroting the user's own constraint back; heavy in shards 8-18.",
+  "regex": "^\\s*(?:Understood|Acknowledged|Noted|Agreed|Clear|Got it)\\s*[.,;:\u2014]",
+  "scope": "first-200-chars",
+  "examples": [
+   "Understood. I'll apply that verification and reporting standard on every completion claim.",
+   "Acknowledged. The verified claim remains limited to the deployed pre-close checkpoint.",
+   "Understood; subsequent completion claims will distinguish design, local implementation, runtime execution, and verified behavioral evidence.",
+   "Understood. I over-ran that.",
+   "Got it."
+  ]
+ },
+ {
+  "id": "future-compliance-promise",
+  "category": "tone",
+  "label": "Promise to behave differently next time",
+  "description": "A content-free pledge about how future completion claims will be worded, standing in for doing work; whole messages in shards 15-18 consist of only this plus a coda.",
+  "regex": "(?:\\bI(?:'|\u2019)?ll\\s+(?:apply|keep|continue to|reconcile|limit|state)\\b[^.\\n]{0,140}\\b(?:completion claims?|evidence|verification standard|limitations?|standard)\\b|\\bFuture completion (?:claims|reports) will\\b|\\bSubsequent completion claims will\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "Understood. I'll keep completion claims tied to exact observed evidence and state limitations plainly.",
+   "Acknowledged. Future completion reports will distinguish direct evidence from limitations and include the required turn summary.",
+   "Understood; subsequent completion claims will distinguish design, local implementation, runtime execution, and verified behavioral evidence.",
+   "Understood. I'll apply that evidence check before making any fixed, resolved, verified, or completed claim."
+  ]
+ },
+ {
+  "id": "reconciled-scope-retraction",
+  "category": "openings",
+  "label": "'Reconciled:' / scope-narrowing label opener",
+  "description": "An entire message genre whose first word announces that a prior claim is being narrowed, using one of a small set of interchangeable labels; 6 shards, up to 18 of 50 in one.",
+  "regex": "^\\s*(?:Reconciled|Reconciliation complete|Reconciled status|Reconciled scope|Reconciled limitation|Claim reconciled|Evidence reconciled|Evidence reconciliation|Evidence clarification|Evidence boundary|Scope reconciliation|Scope check|Scope confirmed|Scope clarification|Scope limitation|Verified scope|Precision limitation|Narrowed claim|Narrowing (?:one point|the claim)|Correction(?: for precision)?|Clarification|Observed production evidence only)\\b\\s*[:.,]",
+  "scope": "first-200-chars",
+  "examples": [
+   "Reconciled: only the isolated local fixture was verified\u2014not the complete canonical Observation node.",
+   "Narrowed claim: only the established-history C-X2 branch was verified.",
+   "Scope confirmed: this was a local pre-run review of the uncommitted CLD worktree.",
+   "Evidence boundary:",
+   "Reconciled against the literal request:",
+   "Precision limitation:"
+  ]
+ },
+ {
+  "id": "colon-stub-opener",
+  "category": "openings",
+  "label": "First line is a colon stub introducing a list",
+  "description": "The opening line is a label fragment ending in a colon that hands straight to bullets or a fence, so the message has no topic sentence; 7 shards.",
+  "regex": "^[^\\n:]{3,90}:\\s*(?:\\n|$)",
+  "scope": "first-200-chars",
+  "examples": [
+   "Created corrected logo files here:",
+   "Deployed to production:",
+   "Live proof:",
+   "Evidence from the repo right now:",
+   "Straight answer:",
+   "Sources checked:"
+  ]
+ },
+ {
+  "id": "heres-the-deictic-framing",
+  "category": "openings",
+  "label": "\"Here's the honest status\" framing sentence",
+  "description": "A second sentence that announces the shape of the message instead of being part of it; every instance is deletable without loss.",
+  "regex": "\\bHere(?:'|\u2019)s\\s+(?:what|where|the|it|my|exactly|how)\\b",
+  "scope": "first-200-chars",
+  "examples": [
+   "Here's what's actually going on.",
+   "Here's the honest status.",
+   "Here's the resolution.",
+   "Here's my actual take.",
+   "Here's the grounded picture:",
+   "Here's the headline and the issues."
+  ]
+ },
+ {
+  "id": "turn-summary-coda",
+  "category": "closings",
+  "label": "Mandatory 'Turn summary:' footer",
+  "description": "A trailing paragraph literally beginning 'Turn summary:' whose first sentence restates the body verbatim-in-other-words and whose second names a next step; 48-49 of 50 in shards 16-18.",
+  "regex": "(?m)^\\s*Turn summary:\\s",
+  "scope": "last-200-chars",
+  "examples": [
+   "Turn summary: We completed the independent adversarial audit of CHI-13.",
+   "Turn summary: The explicit CHI-16 selector is locally implemented and verified. The next best step is pushing `db79db69` to `origin/dev`.",
+   "Turn summary: The completion-check requirements are acknowledged.",
+   "Turn summary: We refined Erin into a process-governance system."
+  ]
+ },
+ {
+  "id": "turn-summary-royal-we",
+  "category": "tone",
+  "label": "'We' in the coda for solo work",
+  "description": "The body says 'I' and the summary flips to 'We' for the same solo agent work, diffusing credit to a collaborator who did nothing; 24-26 codas per shard in shards 15-18.",
+  "regex": "(?m)^\\s*Turn summary:\\s*We\\b",
+  "scope": "last-200-chars",
+  "examples": [
+   "Turn summary: We confirmed from the live SMS and tool traces that Charlie failed to route.",
+   "Turn summary: We verified that DIV implements most of Phase 1.",
+   "Turn summary: We implemented the single-root SMSKit repair locally with focused contract coverage.",
+   "Turn summary: We reviewed the live quantitative process and found gaps."
+  ]
+ },
+ {
+  "id": "best-next-step",
+  "category": "closings",
+  "label": "'Best next step:' prescription",
+  "description": "A fixed terminal slot naming one future action, always superlative though there is never a runner-up; the single strongest closing tic across shards 6-18, up to 39 of 50.",
+  "regex": "\\b(?:(?:the\\s+)?(?:single\\s+)?(?:next\\s+best|best\\s+next)\\s+(?:step|action|move|target|route|cleanup|check)\\b|the\\s+next\\s+step\\s+is\\b|next\\s+best\\s+step\\s+remains\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "Best next step: fix the idea-to-story actor normalization lane first, because it accounts for multiple failures.",
+   "The next best step is to add malformed-payload non-mutation proof.",
+   "Next best step:",
+   "The single next best step is to leave the workspace untouched.",
+   "Best next compression-only target:"
+  ]
+ },
+ {
+  "id": "forward-pointer-remaining-work",
+  "category": "closings",
+  "label": "'The next/remaining X is' forward pointer",
+  "description": "Closes by naming work not done, using a fixed frame of 'the next' plus a superlative plus a work noun; 8 shards.",
+  "regex": "\\bThe\\s+(?:next|remaining|immediate|correct|right|safest|sensible|missing|bigger|only remaining)\\s+(?:major\\s+|real\\s+|useful\\s+|concrete\\s+|controlled\\s+|highest-value\\s+|correct\\s+|required\\s+|remaining\\s+)?(?:work|move|fix|pass|check|action|proof|cleanup|correction|verification|milestone|repair|blocker|investigation|decision)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "The next real move is deployment/reset materialization, not more theory.",
+   "The next highest-value fix is to suppress SMS alerts for `cancelled` runs.",
+   "The remaining proof is to run this contract against isolated real bug artifacts.",
+   "The next major remaining work is production deployment/reset path:",
+   "The only remaining investigation is separate:"
+  ]
+ },
+ {
+  "id": "did-not-do-disclosure",
+  "category": "handback",
+  "label": "'I did not X' negative disclosure",
+  "description": "A standalone terminal sentence inventorying untaken actions, emitted unprompted whether or not anyone could have believed otherwise; all 18 shards.",
+  "regex": "\\bI\\s+(?:did\\s+not|didn(?:'|\u2019)t|have\\s+not|haven(?:'|\u2019)t|made\\s+no|took\\s+no|issued\\s+no|will\\s+not)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "I did not run the live BASIC suite.",
+   "I did not stage, commit, push, or deploy.",
+   "I made no changes.",
+   "I have not committed or deployed these changes yet.",
+   "I did not touch shared Engine source or CHI during this rerun.",
+   "I issued no live bug-row mutations."
+  ]
+ },
+ {
+  "id": "nothing-was-changed-attestation",
+  "category": "handback",
+  "label": "'Nothing was deployed' compliance recital",
+  "description": "A standing attestation that no side effects occurred, appended as a ritual rather than as an answer to anything asked; 30-32 of 50 in the later shards.",
+  "regex": "(?:\\bNothing\\s+(?:was|is|has\\s+been)\\s+(?:committed|pushed|deployed|changed|touched|mutated|removed|sent|fixed|exercised|staged)\\b|\\bNo\\s+(?:code|files?|data|records?|production|live|deployment|push|side\\s+effects?|business\\s+data|application\\s+tests|customer\\s+records|tooling\\s+code|queue|new)\\b[^.\\n]{0,110}?\\b(?:was|were)\\s+(?:changed|committed|pushed|deployed|touched|modified|mutated|created|sent|introduced|performed|run|made|altered)\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "Nothing was committed, deployed, or exercised against live Host/CHI.",
+   "No code changes were made for this one; this was live state repair.",
+   "No production data or configuration was changed.",
+   "No files were changed.",
+   "Nothing was pushed or deployed.",
+   "No tooling code was changed, deployed, or restarted."
+  ]
+ },
+ {
+  "id": "negated-noun-sweep",
+  "category": "handback",
+  "label": "Four-to-nine-noun negated enumeration",
+  "description": "A long comma list of systems that were not touched, escalating the disclaimer into an inventory; 5 shards.",
+  "regex": "\\bNo\\s+(?:[A-Za-z/_-]+,\\s+){3,}(?:or\\s+)?[A-Za-z/_-]+\\s+(?:was|were)\\s+(?:changed|touched|created|sent|deployed|mutated|modified|run|exercised|performed|regenerated)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "No code, queues, tests, evals, commits, deployments, or live data were changed during this investigation.",
+   "No provider, model, MiniMax, Pipecat, voice architecture, deployment, live call, or SMS path was changed or exercised.",
+   "No code, coupon records, jobs, or customer data were changed.",
+   "No invitations, tokens, assignments, or engagement records were regenerated or changed."
+  ]
+ },
+ {
+  "id": "preserved-dirty-worktree",
+  "category": "handback",
+  "label": "Unrelated dirty work disclaimed and 'preserved'",
+  "description": "A recurring boilerplate clause partitioning pre-existing repo mess from this turn's work, with 'preserved' or 'left untouched' as the ritual verb; 8 shards.",
+  "regex": "(?:\\b(?:unrelated|pre-existing)\\b[^.\\n]{0,80}\\b(?:dirty|untracked|uncommitted|worktree)\\b|\\b(?:were|was)\\s+preserved\\b|\\bleft\\s+(?:those|them|it|that)\\s+(?:alone|untouched)\\b|\\bremain(?:s)?\\s+untouched\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "Existing unrelated dirty work is still present in `.pi/`, `app/services/google_voice/`, and `tests/`.",
+   "The existing unrelated dirty repo files were left untouched.",
+   "The four unrelated dirty agent `pyproject.toml` files were preserved.",
+   "There are still unrelated pre-existing dirty files in `tau-by-clarity`; I left those alone."
+  ]
+ },
+ {
+  "id": "memory-provenance-footer",
+  "category": "handback",
+  "label": "Memory/skill-file compliance citation",
+  "description": "A near-final sentence naming the .md rule file that governed the run; it certifies process obedience and says nothing about the result; 11 shards.",
+  "regex": "\\b(?:Memory(?:/preflight| preflight| rules?| used| rule used)?|Operational(?: memory| handling| routing| details| guidance| credential| targeting| preflight| behavior| access| paths| assessment)?|Deployment(?: targeting)?|Plane used|I followed|I used|This follow(?:s|ed)|The (?:audit|rerun|deployment|process|topology|evidence-first workflow) (?:followed|used|comes from))\\b[^.\\n]{0,180}?\\.md\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Memory preflight used: `clarity-internal-secrets.md`.",
+   "Operational handling followed `agent-autonomy-preferences.md`, `zshrc-agent-dispatcher.md`, and `tau-root-paths.md`.",
+   "I followed `process-not-content.md` and `timeouts-are-not-runaway-guardrails.md`.",
+   "Deployment followed [erin-kai-claire-deployment.md](...).",
+   "Operational access followed `devflow-host-tunnel.md`."
+  ]
+ },
+ {
+  "id": "memory-preflight-null-result",
+  "category": "evidence",
+  "label": "Preflight that found nothing, reported anyway",
+  "description": "Narrates that a memory search returned no hits \u2014 process narration with zero payload; noted in 4 shards.",
+  "regex": "\\bmemory\\s+preflight\\b[^.\\n]{0,140}\\bno\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Memory preflight found no existing Claire alias rule.",
+   "Memory preflight used `/Users/marcusswift/AGENTS.md`; no relevant CLD promise rule was found.",
+   "Memory preflight found no CHI-specific retained procedure.",
+   "Memory preflight was run first; no Putnam-specific email credential/process memory was found."
+  ]
+ },
+ {
+  "id": "what-changed-label",
+  "category": "structure",
+  "label": "'What changed:' section label",
+  "description": "A bare noun-phrase line ending in a colon used instead of a markdown header to open the change list; the label rotates through 15+ near-synonyms doing one job. Present in all 18 shards.",
+  "regex": "(?m)^\\s*(?:What changed(?: in this pass| now| and shipped| back)?|What I (?:did|found|verified|observed|added|fixed)|What(?:'|\u2019)s done|What now exists|What exists(?: now| right now)?|What happened|What we know|What is (?:actually proven|still weak|verified now|not verified enough)|Key changes|Key pieces now in place|Changed|Changes|Delivered|Implemented|Added|Removed|Key outcomes)\\s*:\\s*$",
+  "scope": "line-start",
+  "examples": [
+   "What changed:",
+   "What I did:",
+   "Key changes:",
+   "Changed:",
+   "What exists now:",
+   "What changed in this pass:"
+  ]
+ },
+ {
+  "id": "verification-label-block",
+  "category": "structure",
+  "label": "'Verification:' evidence block",
+  "description": "A near-mandatory labelled block of proof bullets that always sits after the change list and before the caveat, never integrated into prose; all 18 shards.",
+  "regex": "(?m)^\\s*(?:Verification(?: run| passed| done| I ran| and deploy status)?|Verified(?: live| now| on [^\\n:]{0,40})?|Validation(?: passed| results| already run)?|Checks pass(?:ed)?|Smoke checks passed|Final checks|Evidence|Live proof|Current evidence|Requirements evidence|Smoke evidence|Tests(?: added| run)?)\\s*:\\s*$",
+  "scope": "line-start",
+  "examples": [
+   "Verification:",
+   "Verified:",
+   "Validation passed:",
+   "Verification run:",
+   "Evidence:",
+   "Verified on the server:"
+  ]
+ },
+ {
+  "id": "colon-then-bullet-list",
+  "category": "structure",
+  "label": "Claim, colon, bullet fragments",
+  "description": "Almost every claim is delivered as a stem plus an unranked bullet list of noun fragments rather than as prose; 35-48 of 50 in every shard, and Codex's only organising device.",
+  "regex": "(?m):\\s*\\n\\s*\\n?\\s*-\\s+\\S",
+  "scope": "anywhere",
+  "examples": [
+   "What changed:\\n\\n- Added a clear `rejection_reason`",
+   "Root cause:\\n- We called `A`",
+   "Verification:\\n- `81 passed in 18.52s`",
+   "Persisted:\\n- 5 capabilities\\n- 25 tool contracts"
+  ]
+ },
+ {
+  "id": "label-value-bullet",
+  "category": "formatting",
+  "label": "'Label: `value`' verbless bullets",
+  "description": "Bullets are key-value rows wearing a dash \u2014 an identifier and its state with no verb and no article; the dominant bullet shape from shard 8 onward.",
+  "regex": "(?m)^\\s*-\\s+[A-Z][A-Za-z0-9 /()_-]{2,45}:\\s+\\S",
+  "scope": "line-start",
+  "examples": [
+   "- Commit: `003262339ef2ddc7df20b5f83d78e3c3c3931173`",
+   "- Route: `/newhire/onboarding`",
+   "- Focused tests: 13 passed.",
+   "- Health: HTTP 200, runtime ready",
+   "- Current state: `pending_consent`"
+  ]
+ },
+ {
+  "id": "past-tense-verb-bullets",
+  "category": "formatting",
+  "label": "Bullet run where every item starts with a past-tense verb",
+  "description": "Consecutive change bullets all opening with the same verb form, turning a diff into a parallel-structure inventory; 6 shards.",
+  "regex": "(?m)^\\s*-\\s+(?:Added|Removed|Updated|Fixed|Replaced|Deployed|Ran|Pushed|Closed|Preserved|Restored|Rebuilt|Persisted|Created|Implemented|Changed|Wired|Moved|Merged|Documented)\\b",
+  "scope": "line-start",
+  "examples": [
+   "- Added a clear `rejection_reason`",
+   "- Removed `_NoopSessionEvalJudge`",
+   "- Restored the execution gate",
+   "- Closed 93 pre-`1.0.307` failed executable backlog rows as `closed_rejected`."
+  ]
+ },
+ {
+  "id": "anaphoric-negative-bullets",
+  "category": "formatting",
+  "label": "Consecutive 'No X' / 'It does not' bullets",
+  "description": "Three to ten bullets that all begin with the same negative token, converting absence into a list; 5 shards.",
+  "regex": "(?m)^\\s*-\\s+(?:No\\b|Nothing\\b|Zero\\b|It does \\*{0,2}not\\b|That [a-z ]{0,30}does \\*{0,2}not\\b|Do \\*{0,2}not\\b|I did \\*{0,2}not\\b)",
+  "scope": "line-start",
+  "examples": [
+   "- No reply was sent.",
+   "- It does **not** set `processing_status = system_ops_pending`.",
+   "- Do **not** enable Tau memory.",
+   "- Zero semantic-memory records created."
+  ]
+ },
+ {
+  "id": "bold-titlecase-pseudo-header",
+  "category": "formatting",
+  "label": "Bold Title-Case line as a header",
+  "description": "Invented section titles in bold Title Case standing alone on a line in place of markdown headers, often 5-11 of them in a 300-word message; 8 shards.",
+  "regex": "(?m)^\\*\\*[A-Z][A-Za-z]*(?:\\s+[A-Za-z]+){1,5}\\*\\*\\s*$",
+  "scope": "line-start",
+  "examples": [
+   "**Target Flow**",
+   "**Key Correction**",
+   "**Recommended Next Step**",
+   "**Control Plane Map**",
+   "**What Still Needs a Backend**",
+   "**The Key Design Decision**"
+  ]
+ },
+ {
+  "id": "numbered-bold-heading",
+  "category": "formatting",
+  "label": "Numbered bold pseudo-headings",
+  "description": "Advisory answers rendered as `1. **Title**` items with a bare bullet list under each, even in a 200-word reply; 5 shards.",
+  "regex": "(?m)^\\s*\\d+\\.\\s+\\*\\*[^*\\n]{2,90}\\*\\*",
+  "scope": "line-start",
+  "examples": [
+   "1. **Payables Workflow**",
+   "2. **ATC dispatches to the right sub-agent**",
+   "1. **Signals Enter The World**",
+   "1. **Owner teaches policy/procedure**"
+  ]
+ },
+ {
+  "id": "text-fence-for-prose",
+  "category": "formatting",
+  "label": "```text fence around non-code",
+  "description": "Prose, filenames, UI labels, status lines or invented pseudo-schemas wrapped in a text fence though none of it is code; 7 shards, up to 17 fences in one message.",
+  "regex": "```text\\b",
+  "scope": "anywhere",
+  "examples": [
+   "```text\\n13 passed\\nruff check passed\\n```",
+   "```text\\nApp Review\\npages_show_list\\n```",
+   "```text\\nemail memories\\n-> entities\\n-> observations\\n```"
+  ]
+ },
+ {
+  "id": "arrow-pipeline-chain",
+  "category": "formatting",
+  "label": "Arrow chain as a diagram substitute",
+  "description": "Two or more `->` or `\u2192` links strung into a pipeline in place of explaining the flow in a sentence; 12 shards.",
+  "regex": "(?:->|\u2192)\\s*\\S[^\\n]{0,80}?(?:->|\u2192)",
+  "scope": "anywhere",
+  "examples": [
+   "email memories -> entities -> observations -> open loops",
+   "Explorer \u2192 Planner \u2192 model validation \u2192 Queuer",
+   "world fact -> condition builder -> CustomerOpsTick -> Charlie customer_ops Tau agent",
+   "Source -> IdentitySignals -> Entities -> Relationships -> Observations"
+  ]
+ },
+ {
+  "id": "absolute-path-md-link",
+  "category": "formatting",
+  "label": "Markdown link to an absolute local path",
+  "description": "Evidence rendered as `[basename.py](/Users/marcusswift/.../file.py:LINE)` \u2014 unclickable for the reader, a citation ritual standing in for quoting the code; all 18 shards.",
+  "regex": "\\]\\(<?/Users/[^)\\n]{5,200}\\)",
+  "scope": "anywhere",
+  "examples": [
+   "[registry.py](/Users/marcusswift/python/clarify_voice/app/services/registry.py:33)",
+   "[topic_attention.py](/Users/marcusswift/python/clarify_voice-wt-topic-attention-query/app/services/users_world/topic_attention.py)",
+   "[config.toml](/Users/marcusswift/.codex/config.toml:210)"
+  ]
+ },
+ {
+  "id": "file-line-citation",
+  "category": "evidence",
+  "label": "file.ext:LINE citation suffix",
+  "description": "A line-number anchor appended to a filename as proof-by-pointer, habitual even where the line adds nothing; 9 shards.",
+  "regex": "\\.(?:py|ts|tsx|js|jsx|php|md|json|ya?ml|toml)::?\\d+(?:[-\u2013]\\d+)?\\b",
+  "scope": "anywhere",
+  "examples": [
+   "`service.py:72\u2013117`",
+   "[gateway.py](/Users/.../gateway.py:1488)",
+   "`tau_runtime.py:137`",
+   "`devflow_queuer.py:798`"
+  ]
+ },
+ {
+  "id": "n-passed-count",
+  "category": "evidence",
+  "label": "Bare 'N passed' as the whole proof",
+  "description": "Test outcomes reduced to a backticked integer with no command output, no failure count, and no statement of what the tests cover; all 18 shards.",
+  "regex": "\\b\\d{1,4}\\s*(?:/\\s*\\d{1,4}\\s*)?(?:focused\\s+|targeted\\s+|adjacent\\s+|related\\s+|canonical\\s+|deterministic\\s+)?(?:tests?\\s+|assertions?\\s+|checks\\s+|fixtures\\s+|scenarios\\s+)?passed\\b",
+  "scope": "anywhere",
+  "examples": [
+   "`74 passed`",
+   "`103 passed`",
+   "`155 passed in 2.74s`",
+   "135 focused tests passed.",
+   "`178/178 fixtures passed`",
+   "`648 passed, 7 deselected, 13 warnings`"
+  ]
+ },
+ {
+  "id": "focused-test-qualifier",
+  "category": "vocabulary",
+  "label": "'focused' / 'targeted' as pre-emptive cover",
+  "description": "An adjective attached to the test count that narrows the claim before anyone questions it; 9 shards, and 'focused' alone appears in up to 10 of 50.",
+  "regex": "\\b(?:focused|targeted)\\s+(?:tests?|suite|regressions?|verification|coverage|contract|unit\\s+test|Playwright|checks|bundle|alignment|subset)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Focused tests: 13 passed.",
+   "135 focused tests passed.",
+   "Focused verification: 27 tests passed.",
+   "Targeted pytest subset: `12 passed`",
+   "focused compression suite: 75 passed"
+  ]
+ },
+ {
+  "id": "compile-lint-filler-proof",
+  "category": "evidence",
+  "label": "ruff / py_compile / git diff --check as proof",
+  "description": "Compilation, lint and whitespace checks reported as if they were evidence of behaviour, including on documentation-only changes; 6 shards.",
+  "regex": "\\b(?:Ruff(?:\\s+check)?|py_compile|git\\s+diff\\s+--check|ESLint|Prettier|Python\\s+compile|Compile\\s+check|Syntax\\s+check|Diff\\s+check|Import\\s+check|compileall)\\b[^.\\n]{0,50}?\\b(?:passed|pass|passes|clean)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "`ruff check` passed on touched Python files.",
+   "Ruff: passed.",
+   "`git diff --check` passed for the doc changes.",
+   "`py_compile` passed on touched runtime modules.",
+   "- Syntax check: passed"
+  ]
+ },
+ {
+  "id": "health-json-blob",
+  "category": "evidence",
+  "label": "Health-check JSON pasted as deploy proof",
+  "description": "A raw `{\"status\":\"healthy\",\"version\":...}` string dropped in as the last item of the verification block; 4 shards.",
+  "regex": "\\{\"status\"\\s*:\\s*\"healthy\"",
+  "scope": "anywhere",
+  "examples": [
+   "{\"status\":\"healthy\",\"version\":\"1.0.47\"}",
+   "{\"status\":\"healthy\",\"version\":\"1.1.94\"}",
+   "{\"status\":\"healthy\",\"version\":\"1.0.307\"}"
+  ]
+ },
+ {
+  "id": "commit-sha-token",
+  "category": "evidence",
+  "label": "Backticked commit SHA as identity token",
+  "description": "Short and full hashes pasted raw in backticks, often without saying what the commit contains; all 18 shards.",
+  "regex": "`[0-9a-f]{7,40}`",
+  "scope": "anywhere",
+  "examples": [
+   "Commit: `65b6a68`",
+   "commit `5bc1766` is deployed and healthy",
+   "`23dd1989ca251e2f1f9755d3c420ba3fa0a7bced`",
+   "Committed as `81cec787`."
+  ]
+ },
+ {
+  "id": "command-arrow-result",
+  "category": "evidence",
+  "label": "`command` -> `N passed` pairing",
+  "description": "The command and its stripped result joined by a bare arrow, in place of showing what ran or what it asserted; 6 shards.",
+  "regex": "`[^`\\n]{2,80}`\\s*(?:->|\u2192)\\s*`?\\s*(?:\\d{1,4}\\s*passed|passed)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "`uv run pytest -q` -> `74 passed`",
+   "`npm test -- billingView.test.ts --run` -> `6 passed`",
+   "`uv run pytest tests/services/sub_agents -q` \u2192 `15 passed`",
+   "`npm run lint` -> passed"
+  ]
+ },
+ {
+  "id": "backticked-plain-english",
+  "category": "formatting",
+  "label": "Ordinary English words in backticks",
+  "description": "Status words, counts and plain nouns wrapped in code spans for borrowed authority; backticks are the emphasis device in place of bold, 5-10 spans per message.",
+  "regex": "`(?:passed|healthy|clean|blocked|queued|done|pending|active|failed|resolved|triaged|parked|missing|proposed|claimed|submitted|sent|unchanged|complete)`",
+  "scope": "anywhere",
+  "examples": [
+   "`blocked`",
+   "`parked`",
+   "`healthy`",
+   "`missing`",
+   "`status=provisioned`",
+   "`Included`"
+  ]
+ },
+ {
+  "id": "x-not-y-contrast",
+  "category": "rhetoric",
+  "label": "'X, not Y' corrective apposition",
+  "description": "A claim immediately fenced by the rejected alternative; the single most repeated sentence shape in the corpus, present in every shard at 20-46% of messages.",
+  "regex": "(?:,\\s+not\\s+|\\s*\u2014\\s*not\\s+|\\s*\u2013\\s*not\\s+)",
+  "scope": "anywhere",
+  "examples": [
+   "Pricing should come from Stripe, not your DB",
+   "a confidence signal, not a sole authorization mechanism",
+   "It is execution transport\u2014not project activation and not a second task record.",
+   "This is a harness issue, not a meaningful model/compression failure.",
+   "The gate\u2014not a component-only test\u2014decides completion."
+  ]
+ },
+ {
+  "id": "rather-than-instead-of",
+  "category": "phrases",
+  "label": "'rather than' / 'instead of'",
+  "description": "The same contrast when a bare comma won't fit; Codex prefers 'instead of', and both cluster in the same messages as the comma form; all 18 shards.",
+  "regex": "\\b(?:rather than|instead of)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "repair rather than rebuild",
+   "To make this operational instead of theoretical",
+   "guarded by custom validators rather than a true discriminated component payload model",
+   "chooses it, instead of inventing a new provider path"
+  ]
+ },
+ {
+  "id": "bolded-negation",
+  "category": "formatting",
+  "label": "Bold used to shout 'not'",
+  "description": "Bold is reserved almost entirely for the negation rather than for emphasis \u2014 in one shard 20 of 74 bold spans are a bare **not**; 9 shards.",
+  "regex": "\\*\\*(?:not|no|never)\\b[^*\\n]{0,45}\\*\\*",
+  "scope": "anywhere",
+  "examples": [
+   "They do **not** start provisioning.",
+   "we should **not** use your personal GitHub credentials",
+   "this URL is **not readable**",
+   "do **not** migrate yet",
+   "It does **not** currently store `agent_display_name`."
+  ]
+ },
+ {
+  "id": "so-restatement-pivot",
+  "category": "rhetoric",
+  "label": "'So ...' land-the-point restatement",
+  "description": "A paragraph opening with 'So' that re-says the paragraph above in compressed form, usually as the closer restating the opening verdict; 12 shards.",
+  "regex": "(?m)^\\s*So(?:\\s+yes|\\s+no|,|:|\\s+the\\b|\\s+this\\b|\\s+it\\b|\\s+for\\b|\\s+my\\b|\\s+in\\b|\\s+among\\b|\\s+a\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "So the snapshot is coherent and green.",
+   "So yes: this materially improves the Playwright suite.",
+   "So: **feature, not bug, but we need execution plumbing for the return loop.**",
+   "So the honest answer is:",
+   "So the short version: the poller found 58 due historical tasks, but none were eligible to run."
+  ]
+ },
+ {
+  "id": "that-gives-benefit-closer",
+  "category": "rhetoric",
+  "label": "'That gives / keeps / lets us ...' value restatement",
+  "description": "A closing sentence re-asserting the value of what was just described, adding no new information; 6 shards.",
+  "regex": "(?m)^\\s*(?:That|This)\\s+(?:gives|lets|keeps|makes|preserves|matches|maps|measures|also simplifies|means)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "That gives us a clean architecture: sandboxing handles environment isolation.",
+   "That keeps Topic clean.",
+   "This keeps each repair measurable.",
+   "That gives you the final state you want: shared repo, live Hetzner server, customer local clone.",
+   "That preserves the human bottleneck for now without making the system guess."
+  ]
+ },
+ {
+  "id": "thats-the-verdict-stamp",
+  "category": "phrases",
+  "label": "\"That's the ...\" verdict stamp",
+  "description": "A deictic stamp applied to the sentence just written, converting a statement into a pronouncement; 5 shards.",
+  "regex": "\\bThat(?:'|\u2019)?s\\s+(?:the|exactly|not|a|precisely|why|cleaner|our)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "That's the failure point.",
+   "That's the right instinct.",
+   "That's not thinking, it's formatting.",
+   "That's the proof we still need.",
+   "That's the cautionary precedent: loading \u2260 nudging."
+  ]
+ },
+ {
+  "id": "proves-x-not-y",
+  "category": "evidence",
+  "label": "'This proves X; it does not prove Y'",
+  "description": "A fixed two-clause construction that certifies a result and withdraws half of it in the same sentence; 6 shards.",
+  "regex": "\\b(?:proves|verifies|confirms)\\b[^.\\n]{0,150}?(?:;|,|\u2014|\u2013)\\s*(?:it\\s+|but\\s+it\\s+|and\\s+)?(?:does\\s+not|do\\s+not|not)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "This proves the schema and deterministic orchestration code; it does not yet prove that the live root model invokes the tool.",
+   "This verifies receipt and visibility in Claire\u2014not that Claire has triaged or acted on them yet.",
+   "This proves correct routing, not execution of the change-request procedure.",
+   "This verifies submission and Sent-folder persistence, not recipient-server delivery or reading."
+  ]
+ },
+ {
+  "id": "does-not-prove",
+  "category": "evidence",
+  "label": "'does not (yet) prove'",
+  "description": "The scope-fence verb phrase used to bound every positive claim, whether or not the user asked for the bound; 8 shards.",
+  "regex": "\\b(?:does|do|did)\\s+not\\s+(?:yet\\s+)?(?:prove|verify|claim|mean|establish|include|exercise)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "This does not prove every Charlie capability works.",
+   "It does not yet verify Courtney's own self-assignment/account behavior or production.",
+   "they do not prove the actual browser route integrates",
+   "It does not prove a deployed build or an Alembic upgrade against PostgreSQL."
+  ]
+ },
+ {
+  "id": "remains-unproven",
+  "category": "sentence-structure",
+  "label": "'remains unverified / remains active' standing debt",
+  "description": "The standing-qualifier verb attaching an unfinished item to every report; 'remain(s)' appears in 17-29 of 50 in the later shards, often twice in one message.",
+  "regex": "\\bremain(?:s|ed|ing)?\\s+(?:un(?:proven|verified|tested|implemented|changed|clear|started|resolved)|not\\b|outstanding|local(?:-only)?|pending|blocked|absent|active|clean|intact|material|untouched|limited)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Those capabilities remain unproven.",
+   "remains unverified",
+   "remains local only",
+   "Goal remains active.",
+   "The verified claim remains limited to the deployed pre-close checkpoint."
+  ]
+ },
+ {
+  "id": "remaining-limitation-label",
+  "category": "closings",
+  "label": "'Remaining limitation:' labelled subtraction",
+  "description": "The last thing the reader sees is a labelled subtraction from the claim just made; 8 shards, and the terminal slot in up to 27 of 50.",
+  "regex": "(?m)^\\s*(?:Remaining limitations?|Remaining proof|Remaining concern|Remaining cleanup|Remaining gap|Remaining meaningful gap|Remaining risk|Residual note|Residual risk|Still unverified|Still unproven|Not yet implemented|Standing limitation|Blocked/unproven|What is not verified enough|What I would not claim yet)\\s*:",
+  "scope": "anywhere",
+  "examples": [
+   "Remaining limitation: full scheduling still cannot complete because FileMaker contains no `orientation_scheduled` template.",
+   "Residual risk: all four deployed staging SHAs differ from local HEAD",
+   "Still unverified: whether the current Observation node's emulation produces the same result as a human.",
+   "Remaining meaningful gap:"
+  ]
+ },
+ {
+  "id": "one-caveat-frame",
+  "category": "closings",
+  "label": "'One caveat:' pre-counted afterthought",
+  "description": "The real risk demoted to a trailing paragraph announced with a counted noun \u2014 always one or two, never three; 9 shards.",
+  "regex": "(?:^|(?<=\\.)\\s+)(?:One|Two|Three)\\s+(?:important\\s+|technical\\s+|separate\\s+|more\\s+|real\\s+|genuine\\s+|repo hygiene\\s+|documentation\\s+|design\\s+|final\\s+)?(?:caveat|note|nuance|thing|issue|detail|limitation|flag|warning|point|consequence|precision|cleanup|heads-up|quirk|decision)s?\\b[^.\\n]{0,70}?:",
+  "scope": "anywhere",
+  "examples": [
+   "One caveat: the script still intentionally bumps to `cpx21` if `INCLUDE_DOCLING=true`",
+   "One note: full `npx tsc --noEmit` still fails, but on existing unrelated repo errors.",
+   "One important caveat: local files show configured workflows and code owner rules.",
+   "Two warnings:",
+   "One separate issue surfaced:"
+  ]
+ },
+ {
+  "id": "important-label-caveat",
+  "category": "closings",
+  "label": "'Important distinction:' labelled qualifier",
+  "description": "A caveat bolted on as a labelled afterthought rather than stated next to the claim it qualifies; 8 shards, with the label rotating through distinction/boundary/nuance/finding.",
+  "regex": "(?m)^\\s*Important(?:\\s+(?:distinction|boundary|caveat|note|finding|nuance|precision|pattern|detail|side effect|contract|design rule|billing caveat|process issue|points to settle))?\\s*[:.]",
+  "scope": "anywhere",
+  "examples": [
+   "Important distinction: these are all session-scoped live tools.",
+   "Important boundary: this currently proves the pipeline mechanics, persistence, resumability, deterministic gates, and failure behavior.",
+   "Important: I did not mark anything skipped, and I did not greenwash a broken UI into passing.",
+   "Important finding:",
+   "Important nuance: don't rely on the hourly rollup for the current conversation."
+  ]
+ },
+ {
+  "id": "note-label-caveat",
+  "category": "closings",
+  "label": "'Note:' / 'Local note:' trailing label",
+  "description": "The same demotion move under a shorter label, always last, never integrated into the sentence it qualifies; 7 shards.",
+  "regex": "(?m)^\\s*(?:Note|Local note|Operational note|Quality note|Caveats?|Residual note|Bottom line|Overall|Summary)\\s*:",
+  "scope": "anywhere",
+  "examples": [
+   "Note: both repos already have broader unrelated dirty worktree changes.",
+   "Local note: there is stashed/uncommitted customer-ops work preserved locally; I did not deploy or discard it.",
+   "Quality note: the artifact is now functional and materially useful, but probably still too dense for your \u201cNB only\u201d bar.",
+   "Bottom line:"
+  ]
+ },
+ {
+  "id": "material-blocker-label",
+  "category": "closings",
+  "label": "'The material blocker is'",
+  "description": "A named blocker appended as a third coda sentence, using a fixed adjective set that adds weight without adding fact; 4 shards.",
+  "regex": "\\b(?:material blocker|current blocker|remaining blocker|only remaining blocker|The blocker is)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "The material blocker is that the deployed model currently supports only human `staff` memberships.",
+   "Nylas/relay delivery evidence remains the material blocker.",
+   "The current blocker is orchestration convergence, not MiniMax capability or Drew's process logic.",
+   "The only remaining blocker is that the available browser profile is signed out."
+  ]
+ },
+ {
+  "id": "claim-then-but-retraction",
+  "category": "sentence-structure",
+  "label": "'X, but Y is still not ...' two-clause verdict",
+  "description": "An assertion immediately halved by a concessive clause, so the win never gets the last word; 7 shards, and the whole message shape in up to 20 of 50.",
+  "regex": "\\b(?:but|however)\\b[^.\\n]{0,140}?\\b(?:still|remains?|not yet|unverified|unproven|unchanged|incomplete|ineffective)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Erin made material diagnostic progress, but is still ineffective end to end.",
+   "The 13 focused tests pass, but they only confirm the reverted baseline\u2014not live effectiveness.",
+   "The code is deployed correctly, but the live Kati\u2192Dessi staging workflow is blocked.",
+   "The existing admin dashboard tests do pass, but they are insufficient for this requirement."
+  ]
+ },
+ {
+  "id": "semicolon-claim-caveat-splice",
+  "category": "sentence-structure",
+  "label": "Semicolon welding claim to caveat",
+  "description": "The claim and its retraction fused into one sentence with a semicolon, avoiding a second sentence and burying the qualifier; 28-31 of 50 in shards 13-18.",
+  "regex": ";\\s+(?:it|they|this|that|the|no|nothing|however|I|we|future|production|canonical|reconciliation|current|existing|unrelated|remaining|automatic|post-run)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Putnam source checkout was unchanged; no push or deployment.",
+   "So this was not the test or tool failing; it was the final model call hitting Anthropic rate limit.",
+   "The verified claim remains limited to the local three-coder panel; reconciliation and knowledge creation remain unproven.",
+   "No further changes were made; the prior claims remain scoped to the observed deployed artifacts."
+  ]
+ },
+ {
+  "id": "therefore-pivot",
+  "category": "rhetoric",
+  "label": "'Therefore,' pivot to the summarizing claim",
+  "description": "A connective that introduces a restatement of what the preceding paragraph already established; 5 shards.",
+  "regex": "(?m)(?:^|(?<=\\.)\\s+)Therefore[,:]?\\s",
+  "scope": "anywhere",
+  "examples": [
+   "Therefore, the precise claim is: each bounded core-system objective set has trustworthy local evidence.",
+   "Therefore, deployment is complete; automatic billing for a newly generated model call remains unverified until the later smoke.",
+   "Therefore, the manual test-mode release canary is verified.",
+   "Therefore:"
+  ]
+ },
+ {
+  "id": "x-now-verbs",
+  "category": "sentence-structure",
+  "label": "'X now does Y' present-tense state claim",
+  "description": "Every change reported as a permanent new property of the system rather than as a diff; 6 shards, up to 23 of 50.",
+  "regex": "\\bnow\\s+(?:returns|shows|has|includes|persists|routes|requires|supports|exposes|emits|compresses|detects|proposes|runs|passes|follows|uses|wins|covers|describes|defers|saves?|reports|matches|stores|creates|starts|enforces|handles|treats|accepts|rejects|spells|composes|scores|proves|waits|initiates|reads|writes|makes|means|lists|tracks|logs|sends|searches|restores?)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "The Usage section now shows one weekly usage-credit progress bar",
+   "`_add_relationship` now proposes a candidate first",
+   "Tau now compresses OpenAI-style dict tool outputs, not just typed Tau `ToolResultMessage` objects",
+   "Feedback submissions now save locally first",
+   "Planner now follows the sibling subagent pattern."
+  ]
+ },
+ {
+  "id": "scare-quoted-strawman",
+  "category": "rhetoric",
+  "label": "Quoted position nobody stated, then rejected",
+  "description": "A paraphrase of a stance the user never took, put in scare quotes so it can be negated; 4 shards.",
+  "regex": "\\bnot\\*{0,2}\\s+[\u201c\"][^\u201d\"\\n]{3,90}[\u201d\"]",
+  "scope": "anywhere",
+  "examples": [
+   "the fix is not \u201cdumb down the output.\u201d",
+   "So the core problem is **not** \u201cGraphWalks failed.\u201d",
+   "The key repair was not \u201cteach Claire these 11 answers.\u201d",
+   "So the repair is not \u201cprompt Planner harder.\u201d"
+  ]
+ },
+ {
+  "id": "honest-status-framing",
+  "category": "tone",
+  "label": "Labelling one paragraph 'honest'",
+  "description": "Flags its own truthfulness as a section label, implying the rest was not; 6 shards.",
+  "regex": "\\b(?:the honest (?:status|answer|proof|conclusions?|read|tradeoff|blockers?|current status)|Here(?:'|\u2019)s the honest|Current honest status|So the honest|My honest (?:read|advice)|to be straight with you|Straight answer|the factual assessment)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "So the honest current status is:",
+   "So the honest answer is:",
+   "Here's the honest status.",
+   "Current honest status:",
+   "So the honest proof is:"
+  ]
+ },
+ {
+  "id": "real-actual-certifier",
+  "category": "vocabulary",
+  "label": "'the real / the actual / a genuine' as certification",
+  "description": "An intensifier asserting that this run, tool or test is the genuine one \u2014 implicitly conceding that earlier ones were not; all 18 shards, 12-26 of 50 per shard.",
+  "regex": "\\b(?:the|a|an|this|that)\\s+(?:real|actual|genuine)\\s+[a-z`\\[][\\w`-]*",
+  "scope": "anywhere",
+  "examples": [
+   "the real Explorer subagent",
+   "a real proof plane",
+   "The actual break was in the sidecar",
+   "a genuine remaining blocker",
+   "the actual Queuer extension",
+   "the real defects this exposed"
+  ]
+ },
+ {
+  "id": "exact-certifier",
+  "category": "vocabulary",
+  "label": "'the exact X' precision claim",
+  "description": "A bare intensifier claiming a precision the sentence does not otherwise demonstrate; almost always deletable. 15-21 of 50 in shards 12-18.",
+  "regex": "\\b(?:the|this|that|his|her|your|their|its|one)\\s+exact\\s+[a-z`\\[]",
+  "scope": "anywhere",
+  "examples": [
+   "the exact staging HCAdmin account",
+   "this exact staff-about-client email",
+   "the exact deployed runtime/tool registry",
+   "the exact request sent to MiniMax",
+   "the exact local shell function, SSH route, production container, persona, and interactive TUI"
+  ]
+ },
+ {
+  "id": "readback-coinage",
+  "category": "vocabulary",
+  "label": "'readback' as a bare noun of proof",
+  "description": "A coined evidence noun used with no explanation, standing in for saying what was queried and what came back; 8 shards, up to 19 of 50.",
+  "regex": "\\bread[- ]?backs?\\b",
+  "scope": "anywhere",
+  "examples": [
+   "authoritative readback",
+   "Database readback confirms 83 pending",
+   "Live readback confirmed",
+   "Readback now shows:",
+   "Authoritative before/after Action-state readback."
+  ]
+ },
+ {
+  "id": "undefined-abstraction-with-the",
+  "category": "vocabulary",
+  "label": "Coined abstract noun used with 'the', never defined",
+  "description": "seam / spine / lane / plane / surface / shape / boundary / substrate / primitive / blast radius used as if the reader already knows what they name; every shard reports this cluster.",
+  "regex": "\\bthe\\s+(?:[a-z][a-z-]*\\s+){0,2}(?:seams?|spine|lanes?|planes?|substrate|primitives?|surfaces?|shape|boundar(?:y|ies)|gates?|blast radius|control plane|proof plane|source of truth|north star|center of gravity|callable surface|tool surface)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "the event spine",
+   "the callable surface",
+   "the shade gate",
+   "the trust boundary",
+   "the control-plane business logic",
+   "the completion seam already exists"
+  ]
+ },
+ {
+  "id": "durable-canonical-authoritative",
+  "category": "vocabulary",
+  "label": "durable / canonical / authoritative / deterministic",
+  "description": "Engineering-virtue adjectives applied to memory, state, records and endpoints almost interchangeably, as self-praise rather than description; all 18 shards.",
+  "regex": "\\b(?:durabl[ey]|durably|canonical|authoritative|deterministic(?:ally)?|first-class|source-backed|idempotent|read-only)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "durable memory",
+   "canonical `main`",
+   "authoritative readback",
+   "deterministic gates",
+   "a first-class, durable event",
+   "a genuinely read-only role"
+  ]
+ },
+ {
+  "id": "clean-as-praise",
+  "category": "vocabulary",
+  "label": "'clean' as the quality verdict",
+  "description": "Architecture, answers, boundaries and worktrees all graded 'clean' or 'cleanly'; 8 shards.",
+  "regex": "\\b(?:clean|cleaner|cleanest)\\s+(?:architecture|boundar(?:y|ies)|decision boundary|answer|model|path|split|rule|fix|sequence|artifact|implementation|separation|repair|commit boundary)\\b|\\bmaps cleanly\\b|\\b(?:Working tree|Tree|Worktree|Repository) is clean\\b",
+  "scope": "anywhere",
+  "examples": [
+   "That gives us a clean architecture",
+   "The clean path is:",
+   "the clean answer is",
+   "maps cleanly into the new DevFlow primitive model",
+   "Working tree is clean.",
+   "Tree is clean."
+  ]
+ },
+ {
+  "id": "green-as-state",
+  "category": "vocabulary",
+  "label": "'green' / 'false green' as the unit of success",
+  "description": "Test and CI outcomes reduced to a colour, plus the coined 'false green' / 'greenwash' used undefined; 6 shards.",
+  "regex": "\\b(?:green|greenwash(?:ing|ed)?|false[- ]greens?|falsely green|gate-green|release-green|green-but-broken)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "All TODO contracts are now green.",
+   "Both trees fixed and green.",
+   "I did not greenwash a broken UI into passing.",
+   "five concrete green-but-broken paths",
+   "Read-only adversarial review found these open false greens:"
+  ]
+ },
+ {
+  "id": "pre-existing-breakage-disclaimer",
+  "category": "evidence",
+  "label": "Failures partitioned as pre-existing and not mine",
+  "description": "Existing breakage separated from this change's breakage, always in the closing paragraph and always with an exculpatory clause; 5 shards.",
+  "regex": "\\b(?:pre-existing|existing unrelated|unrelated (?:existing )?(?:repo |vendor )?)\\b[^.\\n]{0,90}?\\b(?:failures?|errors?|noise|warnings?|deprecations?|breakage|issue|assertions)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "The deprecations are the existing PHP 8.5/vendor warnings, not failing assertions.",
+   "still fails, but on existing unrelated repo errors outside this change set",
+   "three failures are pre-existing Engine-import test-environment failures",
+   "Remaining PHP output is existing vendor/PHP 8.5 deprecation noise, not failing tests."
+  ]
+ },
+ {
+  "id": "root-cause-label",
+  "category": "structure",
+  "label": "'Root cause:' labelled diagnosis block",
+  "description": "A labelled cause block, usually preceded by negating the user's assumed cause and followed by a `Fixed:` list ending in a green count; 6 shards.",
+  "regex": "(?m)^\\s*(?:Root cause|Cause|Current cause|Likely causes|The actual problem is|The problem was|Diagnosis)\\s*[:(]",
+  "scope": "anywhere",
+  "examples": [
+   "Root cause: Clarify Voice already tried to mark inbound emails read, but it was calling a Clarity backend PATCH route that did not exist.",
+   "Root cause (confirmed, not guessed)",
+   "Likely causes:",
+   "The actual problem is:"
+  ]
+ },
+ {
+  "id": "id-hedged-recommendation",
+  "category": "tone",
+  "label": "\"I'd <verb>\" design opinion",
+  "description": "The one hedge Codex uses in advisory mode, always attached to a fully-formed recommendation it then does not act on; 9 shards.",
+  "regex": "\\bI(?:'|\u2019)?d\\s+(?:make|keep|treat|take|separate|frame|narrow|put|refactor|design|split|choose|start|implement|replace|sharpen|model|phrase|remove|add|avoid|prefer|probably|fix|say|want|bet|lean)\\b|\\bI would\\s+(?:not\\b|start|keep|make|avoid|treat|restructure|add|bet|deliberately|use|run)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "I'd frame it as **Developer Mode / Self-Update Workflow**",
+   "I'd separate these into three distinct operator tools with clear ownership:",
+   "I would not make the browser UI talk directly to DevFlow SQLite",
+   "I'd choose **Option B** if we're going to rely on this path long term.",
+   "I would not use background music."
+  ]
+ },
+ {
+  "id": "my-recommendation-label",
+  "category": "tone",
+  "label": "'My recommendation:' / 'My read:' possessive label",
+  "description": "The opinion announced under a possessive label rather than just stated; one message uses 'My vote:' five times; 6 shards.",
+  "regex": "\\bMy\\s+(?:recommendation|read|vote|assessment|expectation|lean|pick|preferred path|honest read|model|instinct)\\b\\s*[:.]|\\bMy recommendation is\\b|\\bI lean\\b",
+  "scope": "anywhere",
+  "examples": [
+   "My recommendation: reuse the existing `memory_proposed` event internally for now",
+   "My vote:",
+   "So my read is:",
+   "My assessment:",
+   "My preferred path"
+  ]
+ },
+ {
+  "id": "prescriptive-should-not",
+  "category": "tone",
+  "label": "'X should not Y' spec-draft register",
+  "description": "Advisory answers built almost entirely from normative should-clauses with no evidence attached, reading as spec drafts rather than answers; 7 shards.",
+  "regex": "\\bshould\\s+(?:not|never|be|own|stay|become|produce|remain|sit|carry|route|only|always|generally not|ideally|move|come)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Doctor should not repair by default",
+   "Recovery should own DevFlow operational state, not project code",
+   "Explorer should not produce source units that approximate DevFlow ideas/stories.",
+   "Business Ops should not say:",
+   "primitive agents should not independently decide global relevance"
+  ]
+ },
+ {
+  "id": "want-me-to-handback",
+  "category": "handback",
+  "label": "'Want me to ...?' permission question",
+  "description": "Ends by offering to do the thing it just argued for, usually as a two-option menu with no recommendation attached; 14 of 50 in one shard, 7 in another.",
+  "regex": "\\b(?:Want me to\\b|Would you like me to\\b|say the word\\b|say go\\b|Recommend I:|Should I\\b[^.\\n]{0,60}\\?)",
+  "scope": "anywhere",
+  "examples": [
+   "Want me to check what else is currently sitting on `ms_dev` ahead of prod from DevFlow, or wire up option 1?",
+   "Want me to resume it?",
+   "Want me to proceed?",
+   "say the word",
+   "Want me to set those?"
+  ]
+ },
+ {
+  "id": "authorization-gate-handback",
+  "category": "handback",
+  "label": "Asking for authorization to continue",
+  "description": "The next step is the user granting permission for work already argued for and specified; 6 shards, heavy in 14-18.",
+  "regex": "\\b(?:explicit(?:ly)?\\s+auth(?:orization|orized)|requires?\\s+(?:your\\s+)?(?:explicit\\s+)?(?:authorization|approval)|awaiting\\s+your\\s+authorization|needs?\\s+explicit\\s+authorization|authorize\\s+(?:deployment|pushing|committing|the)|your\\s+approval|approval\\s+before|deployment\\s+authorization)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Per `agent-autonomy-preferences.md`, deployment needs explicit authorization",
+   "The next best step is awaiting your authorization.",
+   "The next best step is explicit approval to promote that commit to production.",
+   "The next best step is to authorize pushing `d89f77f9` to dev and staging."
+  ]
+ },
+ {
+  "id": "user-chore-handback",
+  "category": "handback",
+  "label": "Next step assigned to the user or a third party",
+  "description": "The prescribed 'best next step' is work for a human \u2014 clicking, replying, confirming, or another named person acting; 7 shards.",
+  "regex": "\\b(?:next best step is (?:for|to have|your)\\b|Best next step: (?:tell|reply|send|have|refresh|sign in|click|confirm|start|run|hard refresh|say|give)\\b|Tell me (?:when|whether)\\b|Reply (?:and|with|naturally|to)\\b|Send me\\b|Have (?:Chris|the team|each|[A-Z][a-z]+)\\s)",
+  "scope": "anywhere",
+  "examples": [
+   "Best next step: hard refresh `https://app.devflow.ing` with `Cmd+Shift+R`",
+   "The next best step is for Sherry to confirm Don received it",
+   "Send me the destination phone number for transfers, and I'll configure it as:",
+   "Have Chris click **Submit responses now**.",
+   "Tell me whether the validator says valid."
+  ]
+ },
+ {
+  "id": "self-blame-confession",
+  "category": "tone",
+  "label": "Confession set piece after pushback",
+  "description": "Flat admission, causal narrative of its own error, then a promise expressed as a procedural rule \u2014 always followed by a bolded correct answer rather than by doing the work; 12 shards.",
+  "regex": "\\b(?:That was (?:on me|wrong)|I was wrong|I(?:'|\u2019)m sorry|My bad|I overcorrected|I over-ran that|I drifted into|I should have|I should not have|I incorrectly|I made an unauthorized|no excuse for that|I was sloppy|I over-sold|That was incomplete work on my part)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "That was on me.",
+   "You were right. The bug was real.",
+   "My bad.",
+   "I should have stated that more prominently.",
+   "I incorrectly treated \u201cdo it\u201d as permission to replace the voice stack."
+  ]
+ },
+ {
+  "id": "progress-percentage-selfscore",
+  "category": "tone",
+  "label": "Self-assigned percentage or letter grade",
+  "description": "An invented, unfalsifiable completion score with no stated denominator or method; 4 shards, up to 16 of 50 as the literal last line.",
+  "regex": "(?m)^\\s*Progress:\\s*\\*{0,2}\\d{1,3}\\s*%|\\bparity estimate:?\\s*\\*{0,2}~?\\d{1,3}(?:\\s*-\\s*\\d{1,3})?\\s*%|\\b(?:Efficiency|Reviewer quality|Reporting quality|Workflow architecture|Autonomous reliability):\\s*\\*\\*[A-D][+-]?\\*\\*",
+  "scope": "anywhere",
+  "examples": [
+   "Progress: 100%.",
+   "Progress: 97% complete.",
+   "Current parity estimate: **~93%**.",
+   "Efficiency: **D**",
+   "Progress: 100% diagnosis, 0% CallKit patch."
+  ]
+ },
+ {
+  "id": "false-precision-metrics",
+  "category": "evidence",
+  "label": "Spurious-precision token/byte/millisecond counts",
+  "description": "Wall-clock, token and byte figures given to full precision as reassurance, where the point is qualitative; 4 shards.",
+  "regex": "\\b\\d{1,3}(?:,\\d{3})+\\s+(?:tokens|bytes|ms|assertions|input tokens|output tokens)\\b|\\bWall clock:|\\bGoal (?:usage|accounting)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Final goal usage: 1,128,791 tokens, about 40 minutes 33 seconds elapsed",
+   "Wall clock: `1:51.77`",
+   "54,449 bytes, MD5 `ed4b5f2818dd0065777a0567320265bd`",
+   "1,652,565 tokens and 6,418,026 ms"
+  ]
+ },
+ {
+  "id": "only-scope-limiter",
+  "category": "sentence-structure",
+  "label": "'I only touched / only X was verified'",
+  "description": "A restrictive scope limiter narrowing the claim inside the sentence that makes it; 6 shards, 'only' in 22-29 of 50.",
+  "regex": "\\bI\\s+only\\s+(?:touched|read|worked|verified|changed|ran|inspected|selected)\\b|\\bonly\\s+the\\s+[^.\\n]{0,70}?\\s+(?:was|were|is|are)\\s+verified\\b|\\bonly\\s+`[^`\\n]{1,30}`\\s+is\\s+verified\\b",
+  "scope": "anywhere",
+  "examples": [
+   "I only touched the API-key lane files above.",
+   "I only read files.",
+   "Reconciled: only the isolated local fixture was verified\u2014not the complete canonical Observation node.",
+   "Reconciled against the exact evidence: only `T-R1` is verified."
+  ]
+ },
+ {
+  "id": "still-standing-debt",
+  "category": "sentence-structure",
+  "label": "'still not / still dirty' held-over item",
+  "description": "A held-over unfinished item from a previous turn attached to the current report; 6 shards, up to 27 of 50.",
+  "regex": "\\bstill\\s+(?:not|no|needs|requires|fails|remains?|unverified|uncommitted|dirty|blocked|missing|outstanding|pending|does not|isn(?:'|\u2019)t|sits|has)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Still no memory, identity, goal, or task persistence added.",
+   "Worktree is still dirty with real code changes plus generated/test artifact noise",
+   "full `npx tsc --noEmit` still fails",
+   "Workspace is still uncommitted.",
+   "Keystone still sits on the session branch."
+  ]
+ },
+ {
+  "id": "verdict-before-evidence",
+  "category": "structure",
+  "label": "Verdict first, evidence arranged to support it",
+  "description": "Every message states its conclusion in the first sentence and then supplies bullets consistent with it; no message builds to a finding, and the ordering verdict \u2192 evidence \u2192 caveat never varies. Reported by all 18 shards but not capturable as a string.",
+  "regex": null,
+  "scope": "first-200-chars",
+  "examples": [
+   "Fixed and verified.",
+   "Implemented and proved task 08.",
+   "Full closure gate passed.",
+   "Provisioning is now live and verified for MSPSI."
+  ]
+ },
+ {
+  "id": "opener-restated-as-closer",
+  "category": "structure",
+  "label": "Thesis stated twice, top and bottom",
+  "description": "The closing paragraph re-says the opening verdict in different words \u2014 via 'So:', a 'That gives us' benefit line, or the Turn summary \u2014 so roughly half of every corpus says its point twice; 9 shards.",
+  "regex": null,
+  "scope": "anywhere",
+  "examples": [
+   "Yes, we can serve the customer's repo through Clarity ... / So: yes, Clarity can serve the setup path.",
+   "No. They are not all covered by Playwright tests yet. / So the honest status is: we do not yet have Playwright coverage for all extracted user stories.",
+   "The fix remains local only at commit `db79db69` / Turn summary: The explicit CHI-16 selector is locally implemented and verified."
+  ]
+ },
+ {
+  "id": "verdict-fragment-opener",
+  "category": "openings",
+  "label": "Subjectless verdict fragment as sentence one",
+  "description": "The message opens with a past participle (or a chain of them) punctuated as its own sentence, so the completion claim lands before any evidence; the dominant opener in all 18 shards.",
+  "regex": "^\\s*(?:\\*\\*)?(?:Done|Fixed|Implemented|Reconciled|Completed|Confirmed|Resolved|Removed|Reverted|Handled|Deployed|Pinned|Changed|Corrected|Tested|Verified|Cleaned|Rebuilt|Narrowed|Delegated|Traced|Held|Killed|Recorded)(?:\\*\\*)?(?:\\s*[.:]|(?:\\s*,)?\\s+(?:and\\s+)?(?:deployed|pushed|committed|verified|merged|tested|proved|aligned|live-verified|redeployed|reinstalled|audited|integrated|smoke-tested|pinned))",
+  "scope": "first-200-chars",
+  "examples": [
+   "Done.",
+   "Fixed.",
+   "Implemented and deployed.",
+   "Confirmed and aligned.",
+   "Implemented, committed, pushed, and deployed.",
+   "Fixed, tested, committed, pushed, and redeployed."
+  ]
+ },
+ {
+  "id": "content-free-framing-opener",
+  "category": "openings",
+  "label": "Opener that announces the message instead of delivering it",
+  "description": "A colon stub or a 'Here's the honest status' line that names the shape of what follows and could be deleted without loss; 8 shards.",
+  "regex": "(?:^[^\\n:]{3,90}:\\s*(?:\\n|$)|\\bHere(?:'|\u2019)s\\s+(?:what|where|the|it|my|exactly|how)\\b)",
+  "scope": "first-200-chars",
+  "examples": [
+   "Created corrected logo files here:",
+   "Deployed to production:",
+   "Live proof:",
+   "Here's what's actually going on.",
+   "Here's the honest status.",
+   "Here's the headline and the issues."
+  ]
+ },
+ {
+  "id": "labelled-trailing-caveat",
+  "category": "closings",
+  "label": "'Important:' / 'Note:' labelled qualifier",
+  "description": "A caveat bolted on under a rotating label rather than stated next to the claim it qualifies; 10 shards, with the label cycling through distinction/boundary/nuance/finding/note.",
+  "regex": "(?m)^\\s*(?:Important(?:\\s+(?:distinction|boundary|caveat|note|finding|nuance|precision|pattern|detail|side effect|contract|design rule|billing caveat|process issue|points to settle))?|Note|Local note|Operational note|Quality note|Caveats?|Bottom line|Overall|Summary)\\s*[:.]",
+  "scope": "anywhere",
+  "examples": [
+   "Important distinction: these are all session-scoped live tools.",
+   "Important boundary: this currently proves the pipeline mechanics, persistence, resumability, deterministic gates, and failure behavior.",
+   "Note: both repos already have broader unrelated dirty worktree changes.",
+   "Local note: there is stashed/uncommitted customer-ops work preserved locally; I did not deploy or discard it.",
+   "Quality note: the artifact is now functional and materially useful, but probably still too dense for your \u201cNB only\u201d bar."
+  ]
+ },
+ {
+  "id": "colon-label-pseudo-header",
+  "category": "structure",
+  "label": "Bare 'Label:' line instead of a header",
+  "description": "A colon-terminated noun phrase alone on a line standing in for a markdown header; the change-list and evidence slots are fixed but their names rotate through 15+ near-synonyms. All 18 shards, 39-48 of 50 files.",
+  "regex": "(?m)^\\s*(?:What changed(?: in this pass| now| and shipped| back)?|What I (?:did|found|verified|observed|added|fixed)|What(?:'|\u2019)s done|What now exists|What exists(?: now| right now)?|What happened|What we know|Key changes|Key pieces now in place|Changed|Changes|Delivered|Implemented|Added|Removed|Key outcomes|Verification(?: run| passed| done| I ran| and deploy status)?|Verified(?: live| now| on [^\\n:]{0,40})?|Validation(?: passed| results| already run)?|Checks pass(?:ed)?|Smoke checks passed|Final checks|Evidence|Live proof|Current evidence|Requirements evidence|Smoke evidence|Tests(?: added| run)?|Current state|Live state|Result|Results|Status|Commit|Pushed|Artifacts|Findings|Proven)\\s*:\\s*$",
+  "scope": "line-start",
+  "examples": [
+   "What changed:",
+   "Verification:",
+   "Verified:",
+   "Validation passed:",
+   "Key changes:",
+   "Current state:"
+  ]
+ },
+ {
+  "id": "uniform-grammar-bullet-run",
+  "category": "formatting",
+  "label": "Bullet run with identical grammatical opening",
+  "description": "Three or more consecutive bullets all opening with the same past-tense verb or the same negative token, turning a diff or an absence into parallel-structure inventory; 8 shards.",
+  "regex": "(?m)^\\s*-\\s+(?:Added|Removed|Updated|Fixed|Replaced|Deployed|Ran|Pushed|Closed|Preserved|Restored|Rebuilt|Persisted|Created|Implemented|Changed|Wired|Moved|Merged|Documented|No\\b|Nothing\\b|Zero\\b|It does \\*{0,2}not\\b|Do \\*{0,2}not\\b|I did \\*{0,2}not\\b)",
+  "scope": "line-start",
+  "examples": [
+   "- Added a clear `rejection_reason`",
+   "- Removed `_NoopSessionEvalJudge`",
+   "- Closed 93 pre-`1.0.307` failed executable backlog rows as `closed_rejected`.",
+   "- No reply was sent.",
+   "- It does **not** set `processing_status = system_ops_pending`.",
+   "- Do **not** enable Tau memory."
+  ]
+ },
+ {
+  "id": "absolute-path-citation",
+  "category": "formatting",
+  "label": "Absolute-path link or file:LINE anchor",
+  "description": "Evidence rendered as `[basename.py](/Users/marcusswift/.../file.py:LINE)` or a bare backticked `file.py:137` \u2014 unclickable for the reader, a citation ritual standing in for quoting the code; all 18 shards.",
+  "regex": "(?:\\]\\(<?/Users/[^)\\n]{5,200}\\)|\\.(?:py|ts|tsx|js|jsx|php|md|json|ya?ml|toml)::?\\d+(?:[-\u2013]\\d+)?\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "[registry.py](/Users/marcusswift/python/clarify_voice/app/services/registry.py:33)",
+   "[config.toml](/Users/marcusswift/.codex/config.toml:210)",
+   "`service.py:72\u2013117`",
+   "`tau_runtime.py:137`",
+   "`devflow_queuer.py:798`"
+  ]
+ },
+ {
+  "id": "does-not-prove-fence",
+  "category": "evidence",
+  "label": "'This proves X; it does not prove Y'",
+  "description": "A fixed construction that certifies a result and withdraws half of it in the same breath, bounding the claim whether or not the user asked for the bound; 9 shards.",
+  "regex": "(?:\\b(?:proves|verifies|confirms)\\b[^.\\n]{0,150}?(?:;|,|\u2014|\u2013)\\s*(?:it\\s+|but\\s+it\\s+|and\\s+)?(?:does\\s+not|do\\s+not|not)\\b|\\b(?:does|do|did)\\s+not\\s+(?:yet\\s+)?(?:prove|verify|claim|mean|establish|include|exercise)\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "This proves the schema and deterministic orchestration code; it does not yet prove that the live root model invokes the tool.",
+   "This verifies receipt and visibility in Claire\u2014not that Claire has triaged or acted on them yet.",
+   "This does not prove every Charlie capability works.",
+   "It does not yet verify Courtney's own self-assignment/account behavior or production.",
+   "they do not prove the actual browser route integrates"
+  ]
+ },
+ {
+  "id": "standing-debt-qualifier",
+  "category": "sentence-structure",
+  "label": "'remains unverified' / 'still not' held-over item",
+  "description": "The standing-qualifier verb attaching an unfinished item to every report, often twice in one message; 'remain' or 'still' appears in 17-29 of 50 across shards 11-18.",
+  "regex": "(?:\\bremain(?:s|ed|ing)?\\s+(?:un(?:proven|verified|tested|implemented|changed|clear|started|resolved)|not\\b|outstanding|local(?:-only)?|pending|blocked|absent|active|clean|intact|material|untouched|limited)\\b|\\bstill\\s+(?:not|no|needs|requires|fails|remains?|unverified|uncommitted|dirty|blocked|missing|outstanding|pending|does not|isn(?:'|\u2019)t|sits|has)\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "Those capabilities remain unproven.",
+   "remains local only",
+   "Goal remains active.",
+   "Still no memory, identity, goal, or task persistence added.",
+   "Worktree is still dirty with real code changes plus generated/test artifact noise",
+   "Workspace is still uncommitted."
+  ]
+ },
+ {
+  "id": "hedged-recommendation-label",
+  "category": "tone",
+  "label": "\"I'd <verb>\" / 'My recommendation:'",
+  "description": "The advisory hedge, often announced under a possessive label; always attached to a fully-formed recommendation the message then does not act on. 10 shards, with 'My vote:' five times in one message.",
+  "regex": "(?:\\bI(?:'|\u2019)?d\\s+(?:make|keep|treat|take|separate|frame|narrow|put|refactor|design|split|choose|start|implement|replace|sharpen|model|phrase|remove|add|avoid|prefer|probably|fix|say|want|bet|lean)\\b|\\bI would\\s+(?:not\\b|start|keep|make|avoid|treat|restructure|add|bet|deliberately|use|run)\\b|\\bMy\\s+(?:recommendation|read|vote|assessment|expectation|lean|pick|preferred path|honest read|instinct)\\b|\\bI lean\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "I'd frame it as **Developer Mode / Self-Update Workflow**",
+   "I'd separate these into three distinct operator tools with clear ownership:",
+   "I would not make the browser UI talk directly to DevFlow SQLite",
+   "My recommendation: reuse the existing `memory_proposed` event internally for now",
+   "My vote:",
+   "So my read is:"
+  ]
+ },
+ {
+  "id": "invented-precision-selfscore",
+  "category": "tone",
+  "label": "Self-assigned score or spurious-precision count",
+  "description": "An unfalsifiable completion percentage or letter grade with no denominator, or token/byte/millisecond figures given to full precision as reassurance; 6 shards, up to 16 of 50 as the literal last line.",
+  "regex": "(?m)^\\s*Progress:\\s*\\*{0,2}\\d{1,3}\\s*%|\\bparity estimate:?\\s*\\*{0,2}~?\\d{1,3}(?:\\s*-\\s*\\d{1,3})?\\s*%|\\b(?:Efficiency|Reviewer quality|Reporting quality|Workflow architecture|Autonomous reliability):\\s*\\*\\*[A-D][+-]?\\*\\*|\\b\\d{1,3}(?:,\\d{3})+\\s+(?:tokens|bytes|ms|assertions|input tokens|output tokens)\\b|\\bWall clock:|\\bGoal (?:usage|accounting)\\b",
+  "scope": "anywhere",
+  "examples": [
+   "Progress: 100%.",
+   "Progress: 97% complete.",
+   "Current parity estimate: **~93%**.",
+   "Efficiency: **D**",
+   "Final goal usage: 1,128,791 tokens, about 40 minutes 33 seconds elapsed",
+   "Wall clock: `1:51.77`"
+  ]
+ },
+ {
+  "id": "real-exact-certifier",
+  "category": "vocabulary",
+  "label": "'the real' / 'the actual' / 'the exact' as certification",
+  "description": "Intensifiers asserting that this run, tool or account is the genuine one \u2014 implicitly conceding earlier ones were not, and almost always deletable; all 18 shards, 12-26 of 50 each.",
+  "regex": "\\b(?:the|a|an|this|that|his|her|your|their|its|one)\\s+(?:real|actual|genuine|exact)\\s+[a-z`\\[][\\w`-]*",
+  "scope": "anywhere",
+  "examples": [
+   "the real Explorer subagent",
+   "The actual break was in the sidecar",
+   "a genuine remaining blocker",
+   "the exact staging HCAdmin account",
+   "the exact request sent to MiniMax",
+   "the actual Queuer extension"
+  ]
+ },
+ {
+  "id": "clean-green-quality-verdict",
+  "category": "vocabulary",
+  "label": "'clean' and 'green' as the quality verdict",
+  "description": "Architecture, answers, boundaries and worktrees graded 'clean'; CI and test outcomes reduced to 'green', with the coined 'false green' / 'greenwash' used undefined. 10 shards.",
+  "regex": "(?:\\b(?:clean|cleaner|cleanest)\\s+(?:architecture|boundar(?:y|ies)|decision boundary|answer|model|path|split|rule|fix|sequence|artifact|implementation|separation|repair|commit boundary)\\b|\\bmaps cleanly\\b|\\b(?:Working tree|Tree|Worktree|Repository) is clean\\b|\\b(?:green|greenwash(?:ing|ed)?|false[- ]greens?|falsely green|gate-green|release-green|green-but-broken)\\b)",
+  "scope": "anywhere",
+  "examples": [
+   "That gives us a clean architecture",
+   "The clean path is:",
+   "Working tree is clean.",
+   "All TODO contracts are now green.",
+   "I did not greenwash a broken UI into passing.",
+   "Read-only adversarial review found these open false greens:"
+  ]
+ }
 ]
