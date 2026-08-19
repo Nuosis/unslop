@@ -118,27 +118,48 @@ def _echo(t):
     return bool(a and b and len(a & b) / min(len(a), len(b)) >= 0.5)
 
 
+STATE = os.path.expanduser("~/.codex/hooks/state-finalization")
+
+
+def _prev_path(sid):
+    return os.path.join(STATE, f"{sid or 'unknown'}.txt")
+
+
 def main():
     try:
         payload = json.load(sys.stdin)
     except Exception:
         payload = {}
+
+    # Codex hands the Stop hook the message directly. It does NOT pass a transcript
+    # path -- confirmed from the payload alignment_guard.py already consumes. Reading
+    # it here avoids globbing 14,992 rollout files on every turn.
+    t = (payload.get("last_assistant_message") or "").strip()
+    sid = payload.get("session_id") or ""
+
+    # transcript_path is honoured when present (backfill/testing passes one)
     path = payload.get("transcript_path") or payload.get("rollout_path")
-    if not path or not os.path.exists(path):
-        sid = payload.get("session_id") or payload.get("thread_id") or ""
-        hits = glob.glob(os.path.expanduser(
-            f"~/.codex/sessions/**/rollout-*{sid}*.jsonl"), recursive=True) if sid else []
-        path = hits[-1] if hits else None
-    if path and os.path.exists(path):
+    prev = None
+    if not t and path and os.path.exists(path):
+        msgs = final_messages(path, 2)
+        t = msgs[0] if msgs else None
+        prev = msgs[1] if len(msgs) > 1 else None
+    elif t:
+        # previous finalization is kept per-session, mirroring alignment_guard's state
         try:
-            msgs = final_messages(path, 2)
-            t = msgs[0] if msgs else None
-            prev = msgs[1] if len(msgs) > 1 else None
-            if t:
+            with open(_prev_path(sid)) as fh:
+                prev = fh.read()
+        except Exception:
+            prev = None
+
+    if t and len(t) >= 80:
+        try:
+            if True:
                 import hashlib
                 row = {"harness": "codex",
-                       "session": payload.get("session_id", ""),
+                       "session": sid,
                        "cwd": payload.get("cwd", ""),
+                       "turn": payload.get("turn_id", ""),
                        "transcript": path,
                        "msg_sha": hashlib.sha1(t.encode()).hexdigest()[:12]}
                 row.update(score(t))
@@ -152,6 +173,9 @@ def main():
                     row["needs_judge"] = True
                 with open(LOG, "a") as fh:
                     fh.write(json.dumps(row) + "\n")
+                os.makedirs(STATE, exist_ok=True)
+                with open(_prev_path(sid), "w") as fh:
+                    fh.write(t)
         except Exception:
             import traceback
             with open(LOG + ".err", "a") as fh:
