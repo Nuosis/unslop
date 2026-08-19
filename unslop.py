@@ -865,18 +865,78 @@ Write your full analysis to ./analysis.md"""
         log("WARNING: analysis.md was not created. The analysis step may have failed.", indent=1)
 
 
+# ── Standing directives / stated preferences ─────────────────────────────
+
+def load_context_files(paths: list[str], label: str) -> str:
+    """Read user standing directives or stated preferences into one blob.
+
+    unslop's default posture is purely subtractive: it names defaults to stop
+    using and refuses to prescribe alternatives. That is correct for a domain
+    with no principal (generic blog prose). It is WRONG for a domain where a
+    specific person is the audience, because "prescribe no alternatives"
+    silently becomes "encode none of their preferences" -- the profile then
+    reads as if every recurring shape were a defect, including the ones the
+    user explicitly asked for.
+    """
+    out = []
+    for raw in paths:
+        path = Path(raw).expanduser()
+        if path.is_dir():
+            files = sorted(path.rglob("*.md"))
+        elif path.is_file():
+            files = [path]
+        else:
+            log(f"WARNING: {label} path not found: {path}", indent=1)
+            continue
+        for f in files:
+            try:
+                out.append(f"### {f.name}\n{f.read_text(errors='replace')}")
+            except Exception as e:
+                log(f"WARNING: could not read {f}: {e}", indent=1)
+    if not out:
+        return ""
+    log(f"Loaded {len(out)} {label} file(s)", indent=1)
+    return "\n\n".join(out)
+
+
 # ── Step 5: Generate Skill File ──────────────────────────────────────────
 
-async def step_generate_skill(out: Path, domain: str, config: ClaudeConfig) -> None:
+async def step_generate_skill(out: Path, domain: str, config: ClaudeConfig,
+                              directives: str = "", preferences: str = "") -> None:
+    ctx = ""
+    if directives:
+        ctx += (
+            "\n\nThe reader of this output has STANDING DIRECTIVES, reproduced below. "
+            "They outrank every avoid-rule you write. Some patterns the analysis flagged "
+            "as slop are things these directives explicitly REQUIRE; others are outright "
+            "VIOLATIONS of them.\n\n<standing-directives>\n"
+            + directives + "\n</standing-directives>"
+        )
+    if preferences:
+        ctx += (
+            "\n\nThe reader has also STATED OUTPUT PREFERENCES. Encode them as positive "
+            "requirements — this is the one place you must prescribe rather than only "
+            "forbid.\n\n<stated-preferences>\n" + preferences + "\n</stated-preferences>"
+        )
+
     prompt = f"""Read ./analysis.md in this directory.
 
 Based on those findings, create a skill file at ./skill.md that can be used as
-instructions to prevent the identified slop patterns in the domain "{domain}".
+instructions to prevent the identified slop patterns in the domain "{domain}".{ctx}
 
 Rules for the skill file:
 
-1. Focus on what to AVOID. The bulk of the file should be specific things NOT to do.
-   Do NOT prescribe specific alternatives — that just creates a new flavor of slop.
+1. Split every pattern in the analysis into THREE buckets, and label them as such:
+   (a) VIOLATES a standing directive — state it as a hard rule and carry the measured
+       rate as a compliance percentage, not a style score.
+   (b) REQUIRED by a standing directive — mark it protected. The only rules allowed
+       here are about placement and length. Never removal. Cutting these is the worse
+       failure.
+   (c) FREE-FORM — no directive speaks to it. Here, and only here, use the subtractive
+       treatment: name the exact default to stop reaching for, and do NOT prescribe a
+       replacement, which would just mint the next generation of slop.
+   If no standing directives were supplied, say so explicitly at the top of the file
+   and treat every pattern as (c).
 
 2. Be specific and actionable. Don't say "avoid clichéd openings." List the exact
    openings to avoid. Don't say "don't use generic color schemes." Name the exact
@@ -885,7 +945,10 @@ Rules for the skill file:
 3. Organize by category (e.g., "Phrases to never use", "Structural patterns to avoid",
    "Visual defaults to break away from", etc.)
 
-4. Start with a one-line description: "Unslop profile for {domain}."
+4. Start with a one-line description: "Unslop profile for {domain}." Immediately
+   after it, add a PRECEDENCE line: standing directives outrank everything in the
+   file, and nothing here authorises hiding a failure, dropping a real caveat, or
+   trimming evidence the reader requires.
 
 5. End with a short section that says something like: instead of reaching for any of
    these defaults, be creative. Vary your approach. If you catch yourself about to use
@@ -989,6 +1052,67 @@ async def step_before_after(
     log(f"Comparison saved to ./before-after/", indent=1)
 
 
+# ── Step 7: Request an output preference ────────────────────────────────
+
+async def step_request_preference(out: Path, domain: str, dtype: str,
+                                  config: ClaudeConfig) -> None:
+    """Ask the reader what they actually want, using a worked example.
+
+    A subtractive profile says what to stop doing. It cannot say whether the
+    result is what the reader wanted -- only they can, and only after seeing it.
+    Ending the run with "here is skill.md, done" hands over an unvalidated
+    instrument. So: rewrite real samples under the new profile, show both, and
+    ask. Skipped entirely when --preferences was supplied.
+    """
+    ext = "*.html" if dtype == "visual" else "*.md"
+    samples = sorted((out / "samples").glob(ext))
+    if not samples:
+        log("No samples to build an example from.", indent=1)
+        return
+
+    picks = [samples[len(samples) // 4], samples[len(samples) // 2],
+             samples[(3 * len(samples)) // 4]][:3]
+    names = ", ".join(p.name for p in picks)
+
+    prompt = f"""Read ./skill.md in this directory. Then read these sample files: {names}
+
+For EACH of those samples, write a rewrite that follows ./skill.md exactly.
+
+Hard constraint: hold the information constant. Every fact, number, identifier,
+failure, caveat and open decision in the original must survive into the rewrite.
+You are changing only the writing. If skill.md marks something protected, keep it.
+
+Write ./preference-request.md containing, for each sample:
+  - the original, quoted in full, with its word count
+  - the rewrite, with its word count
+  - a short list of exactly what changed and why
+
+Then end the file with a section titled "What I need from you" that:
+  - states plainly that this profile was derived from what to AVOID, and that no
+    target for the domain "{domain}" was supplied, so the rewrites reflect the
+    tool's judgment and not a stated preference
+  - asks the reader to say which rewrite is closest to what they want, what is
+    still wrong with it, and any rule that should be reversed
+  - notes that their answer can be saved to a file and passed back via
+    --preferences on the next run, which will encode it as positive requirements
+
+Terse and concrete. No preamble."""
+
+    await run_claude_with_updates(
+        "Building a worked example to request a preference",
+        prompt,
+        cwd=str(out),
+        config=config,
+        success_msg="Preference request ready",
+    )
+
+    if (out / "preference-request.md").exists():
+        log("Preference request → preference-request.md", indent=1)
+        log("This run is NOT finished: the profile is unvalidated until you answer it.", indent=1)
+    else:
+        log("WARNING: preference-request.md was not created.", indent=1)
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────
 
 async def run(args: argparse.Namespace) -> None:
@@ -1009,6 +1133,8 @@ async def run(args: argparse.Namespace) -> None:
 
     is_visual = args.type == "visual"
     total = 4 + (1 if is_visual else 0) + (0 if args.skip_comparison else 1)
+    if not args.preferences:
+        total += 1
 
     UI.banner("unslop")
     log(f"Domain:      {args.domain}")
@@ -1057,13 +1183,23 @@ async def run(args: argparse.Namespace) -> None:
     # 5 — Skill file
     step += 1
     log_step(step, total, "Generate unslop profile file")
-    await step_generate_skill(out, args.domain, config)
+    directives = load_context_files(args.directives, "standing-directive")
+    preferences = load_context_files(args.preferences, "stated-preference")
+    if not directives:
+        log("No --directives supplied: every pattern will be treated as free-form slop.", indent=1)
+    await step_generate_skill(out, args.domain, config, directives, preferences)
 
     # 6 — Before / after
     if not args.skip_comparison:
         step += 1
         log_step(step, total, "Before / after comparison")
         await step_before_after(out, prompts, args.domain, args.type, config)
+
+    # ── Step 7: elicit a target when none was given ──
+    if not preferences:
+        step += 1
+        log_step(step, total, "Elicit output preference")
+        await step_request_preference(out, args.domain, args.type, config)
 
     # ── Summary ──
     UI.banner("done")
@@ -1134,6 +1270,18 @@ examples:
     parser.add_argument(
         "--skip-comparison", action="store_true",
         help="skip the before/after comparison step",
+    )
+    parser.add_argument(
+        "--directives", action="append", default=[],
+        help="path to a file or directory of standing directives the reader has already "
+             "given (CLAUDE.md, a memory dir). Repeatable. Patterns that violate these "
+             "become hard rules; patterns these require become protected.",
+    )
+    parser.add_argument(
+        "--preferences", action="append", default=[],
+        help="path to a file stating how the reader wants output to look. Repeatable. "
+             "Without this, the run ends by showing a worked example and asking for it "
+             "rather than declaring the profile finished.",
     )
 
     args = parser.parse_args()
