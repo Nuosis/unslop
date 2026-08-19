@@ -50,6 +50,39 @@ said whether it matches what they wanted.
 **Do not skip this by guessing the preference.** If you find yourself inventing a rule
 to patch a gap the tool left, that gap is the thing to ask about.
 
+## Harvest real output when it exists
+
+If the agent has already produced output in production, measure that — do not
+generate synthetic samples. `--corpus <adapter>` harvests real finalization messages
+from transcripts (`harvest.py`: `claude-code`, `codex`; adding one is ~40 lines).
+
+Synthetic samples measure what a model does when asked to perform a domain. They do
+not measure what it does under real pressure, and the difference is not cosmetic —
+the largest defect found in the first real run was invisible in short samples.
+
+A harvested corpus has no re-runnable prompt, so the before/after step is skipped
+rather than faked. The preference-request step shows the delta instead, by rewriting
+real samples.
+
+## Count what matches; judge what does not
+
+Two analysis passes, and skipping the second will make a corpus look clean of its
+worst problem.
+
+- **Counted** (`analysis.md`): compile every pattern to a regex, re-count across the
+  whole corpus in code. Never report a model's per-shard estimate as a rate.
+- **Judged** (`judged-*.md`): defects with no lexical signature. In the first real
+  run, messages restating something they had already said ran at **80.7%** — the
+  single largest defect — and no regex finds it. A pattern for the labelled-recap
+  shape catches 1.1% of it.
+
+When you build a detector for a pattern, validate it before trusting it. Score it
+against an LLM judge on a stratified sample and report **per-category precision**,
+not one accuracy number. In the first run a closing-behaviour classifier scored 91%
+on violation categories but 83% on the category that EXCUSED a violation — and the
+excuse category is the dangerous one, because a wrong call there lets a real defect
+through. Gate on the high-precision categories; route the rest to the judge.
+
 ## Output Review
 
 Check `unslop-output/analysis.md` and `unslop-output/skill.md`.
@@ -79,3 +112,21 @@ Return:
 - Any caveats about sample quality, missing screenshots, or weak comparison output
 - If no `--preferences` were supplied: the open question from `preference-request.md`,
   stated as an open question. The run is not finished until it is answered.
+
+## Enforcement is separate from the profile
+
+`skill.md` is an artifact, not a control. Shipping it does not change output. Three
+layers, with very different portability:
+
+1. **Profile** — markdown. Ports to any harness unchanged.
+2. **Injection** — puts the profile in context BEFORE the message is written, so the
+   output is right the first time and nothing is printed twice. Claude Code and Codex
+   both expose `UserPromptSubmit`; other harnesses use a system prompt, `AGENTS.md`,
+   or their own always-on instruction file. One small adapter each.
+3. **Measurement** — scores real output and logs it, so "did this work" has an answer
+   that is not an opinion. Needs readable transcripts, which is the layer that does
+   not port cheaply.
+
+Do not ship this as a model-invoked skill. Skills load when the model judges them
+relevant; output style must apply to every turn, including the ones where the model
+does not think it needs help. It is policy, not capability.

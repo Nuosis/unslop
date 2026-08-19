@@ -865,6 +865,52 @@ Write your full analysis to ./analysis.md"""
         log("WARNING: analysis.md was not created. The analysis step may have failed.", indent=1)
 
 
+# ── Step 4b: Judged patterns ────────────────────────────────────────────
+
+async def step_judge_patterns(out: Path, domain: str, shards: int,
+                              config: ClaudeConfig) -> None:
+    """Find the defects no regex can see.
+
+    The counted pass in step 4 can only measure what a pattern matches. The
+    single largest defect found in the first real run -- messages restating
+    something they had already said, at 80.7% -- is distributed prose
+    restatement with no lexical signature: a regex for the labelled-recap shape
+    finds 1.1% of it. A pass that only counts will report that a corpus is clean
+    of its worst problem.
+    """
+    samples = sorted((out / "samples").glob("*.md"))
+    if not samples or shards < 1:
+        return
+    per = max(1, len(samples) // shards)
+    groups = [samples[i:i + per] for i in range(0, len(samples), per)][:shards]
+
+    async def one(i, group):
+        names = " ".join(p.name for p in group)
+        return await claude(f"""Read these files in ./samples/ in full: {names}
+
+Each is a real final message from an AI agent working in the domain "{domain}".
+
+Find defects that CANNOT be caught by matching a phrase. Ignore anything a regex
+could find. Look for:
+- restating something the message already said, in different words
+- a summary, scorecard or closing that recaps rather than adds
+- the same fact given once as prose and again as a bullet or table cell
+- circling back to re-explain, or a second pass at the same material
+- claims whose confidence does not match their evidence
+- structure that repeats across messages regardless of what they contain
+- anything the message does that serves the writer rather than the reader
+
+For each defect: name it, say how many of the files you read exhibit it, quote two
+examples verbatim, and state plainly whether a regex could detect it.
+
+Write to ./judged-{i}.md. Terse. No preamble.""", cwd=str(out), config=config)
+
+    log(f"Judging {len(samples)} samples across {len(groups)} shards.", indent=1)
+    await asyncio.gather(*(one(i, g) for i, g in enumerate(groups, 1)))
+    made = sorted(out.glob("judged-*.md"))
+    log(f"Judged-pattern findings → {len(made)} file(s)", indent=1)
+
+
 # ── Standing directives / stated preferences ─────────────────────────────
 
 def load_context_files(paths: list[str], label: str) -> str:
@@ -1133,6 +1179,10 @@ async def run(args: argparse.Namespace) -> None:
 
     is_visual = args.type == "visual"
     total = 4 + (1 if is_visual else 0) + (0 if args.skip_comparison else 1)
+    if args.corpus:
+        total -= 1          # harvest replaces generate-prompts + run-samples
+    if args.judge_shards:
+        total += 1
     if not args.preferences:
         total += 1
 
@@ -1151,23 +1201,37 @@ async def run(args: argparse.Namespace) -> None:
 
     step = 0
 
-    # 1 — Generate prompts
-    step += 1
-    log_step(step, total, "Generate prompts")
-    prompts = await step_generate_prompts(args.domain, args.count, out, config)
+    prompts = []
+    if args.corpus:
+        # 1+2 — harvest real output instead of generating it
+        step += 1
+        log_step(step, total, f"Harvest real output ({args.corpus})")
+        cmd = [sys.executable, str(Path(__file__).parent / "harvest.py"),
+               "--adapter", args.corpus, "--out", str(out / "samples")]
+        if args.corpus_root:
+            cmd += ["--root", args.corpus_root]
+        if args.count:
+            cmd += ["--limit", str(args.count)]
+        proc = await asyncio.create_subprocess_exec(
+            *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        so, se = await proc.communicate()
+        for line in so.decode().splitlines():
+            log(line, indent=1)
+        if proc.returncode != 0:
+            log(f"harvest failed: {se.decode()[:400]}", indent=1)
+            sys.exit(1)
+    else:
+        # 1 — Generate prompts
+        step += 1
+        log_step(step, total, "Generate prompts")
+        prompts = await step_generate_prompts(args.domain, args.count, out, config)
 
-    # 2 — Run samples
-    step += 1
-    log_step(step, total, f"Run {len(prompts)} samples through Claude Code")
-    await step_run_samples(
-        prompts,
-        args.domain,
-        args.type,
-        args.concurrency,
-        out,
-        config,
-        args.retries,
-    )
+        # 2 — Run samples
+        step += 1
+        log_step(step, total, f"Run {len(prompts)} samples through Claude Code")
+        await step_run_samples(
+            prompts, args.domain, args.type, args.concurrency, out, config, args.retries,
+        )
 
     # 3 — Screenshots (visual only)
     if is_visual:
@@ -1175,10 +1239,17 @@ async def run(args: argparse.Namespace) -> None:
         log_step(step, total, "Render screenshots")
         await step_render_screenshots(out)
 
-    # 4 — Analyze
+    # 4 — Analyze (counted)
     step += 1
     log_step(step, total, "Analyze patterns")
-    await step_analyze(out, args.domain, args.type, args.count, analysis_config)
+    n_samples = len(list((out / "samples").glob("*.md")))
+    await step_analyze(out, args.domain, args.type, n_samples or args.count, analysis_config)
+
+    # 4b — Analyze (judged): the defects no regex can see
+    if args.judge_shards:
+        step += 1
+        log_step(step, total, "Judge non-matchable patterns")
+        await step_judge_patterns(out, args.domain, args.judge_shards, analysis_config)
 
     # 5 — Skill file
     step += 1
@@ -1191,9 +1262,14 @@ async def run(args: argparse.Namespace) -> None:
 
     # 6 — Before / after
     if not args.skip_comparison:
-        step += 1
-        log_step(step, total, "Before / after comparison")
-        await step_before_after(out, prompts, args.domain, args.type, config)
+        if args.corpus:
+            log("Skipping before/after: a harvested corpus has no re-runnable prompt "
+                "to hold constant. The preference-request step shows the delta instead.",
+                indent=1)
+        else:
+            step += 1
+            log_step(step, total, "Before / after comparison")
+            await step_before_after(out, prompts, args.domain, args.type, config)
 
     # ── Step 7: elicit a target when none was given ──
     if not preferences:
@@ -1271,6 +1347,19 @@ examples:
         "--skip-comparison", action="store_true",
         help="skip the before/after comparison step",
     )
+    parser.add_argument(
+        "--corpus", default=None,
+        help="harvest real finalization output from an agent's transcripts instead of "
+             "generating synthetic samples. Value is a harvest.py adapter name "
+             "(claude-code, codex). Strongly preferred when the agent already has "
+             "production output: synthetic samples measure what the model does when "
+             "asked to perform the domain, not what it does under real pressure.",
+    )
+    parser.add_argument(
+        "--corpus-root", default=None, help="override the adapter's transcript root")
+    parser.add_argument(
+        "--judge-shards", type=int, default=3,
+        help="shards for the judged-pattern pass (default: 3, 0 to skip)")
     parser.add_argument(
         "--directives", action="append", default=[],
         help="path to a file or directory of standing directives the reader has already "
